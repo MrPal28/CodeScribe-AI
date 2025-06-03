@@ -31,7 +31,7 @@ This is a full-featured **Spring Boot** blog application enhanced with **AI capa
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/blog-application-with-ai-integration.git
+git clone https://github.com/MrPal28/Blog-Application-With-AI-Integration.git
 ````
 ```bash
 # Navigate to the project folder
