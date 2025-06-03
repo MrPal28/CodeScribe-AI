@@ -35,7 +35,7 @@ git clone https://github.com/MrPal28/Blog-Application-With-AI-Integration.git
 ````
 ```bash
 # Navigate to the project folder
-cd blog-application-with-ai-integration
+cd Blog-Application-With-AI-Integration
 ````
 
 ```bash
