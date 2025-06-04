@@ -100,6 +100,25 @@ Here are the core dependencies currently used in the project:
         <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+    <!--use for create connection mongodb database-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-mongodb</artifactId>
+    </dependency>
+    
+    <!--use for provide security of our spring boot application-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!--use for sending mails to users-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+
+
     <!-- Lombok for reducing boilerplate code -->
     <dependency>
         <groupId>org.projectlombok</groupId>

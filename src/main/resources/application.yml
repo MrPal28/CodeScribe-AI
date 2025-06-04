@@ -1,6 +1,8 @@
 spring:
   application:
     name: Blog-Application-with-AI-Interation
+  profiles:
+    active: dev
 
 server:
   port: 8082
