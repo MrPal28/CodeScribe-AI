@@ -1,6 +1,7 @@
 # 📘 Blog Application with AI Integration
 
-This is a full-featured **Spring Boot** blog application enhanced with **AI capabilities**. It uses **Maven** as the build automation tool and follows modular, maintainable architecture principles.
+This is a full-featured **Spring Boot** blog application enhanced with **AI capabilities**. It uses **Maven** as the
+build automation tool and follows modular, maintainable architecture principles.
 
 ---
 
@@ -27,7 +28,8 @@ This repository is organized into **three separate branches**, each serving a sp
 ### 🔹 `Front-end-react`
 
 > 🎨 Contains the complete **React-based front-end** code for the blog application interface.
-> 🔗 [Access the `Front-end-react` branch](https://github.com/MrPal28/Blog-Application-With-AI-Integration/tree/Front-end-react)
+> 🔗 [Access the
+`Front-end-react` branch](https://github.com/MrPal28/Blog-Application-With-AI-Integration/tree/Front-end-react)
 
 ---
 
@@ -88,45 +90,29 @@ http://localhost:8082/app/
 
 ---
 
-## 📦 Maven Dependencies
+## 🛠️ Project Status Overview
 
-Here are the core dependencies currently used in the project:
+| Module             | Status                     |
+|--------------------|----------------------------|
+| Database           | Completed                  | 
+| AI Content checker | Completed but need upgrade | 
+| Admin Service      | pending                    |
+| User Service       | Completed                  | 
+| Blog Service       | In Progress                | 
+| Security           | Pending                    | 
+| User Interface     | Pending                    | 
 
-```xml
-<dependencies>
-    <!-- Spring Boot Web -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+---
 
-    <!--use for create connection mongodb database-->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-mongodb</artifactId>
-    </dependency>
-    
-    <!--use for provide security of our spring boot application-->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
+## 🧩 Module Progress
 
-    <!--use for sending mails to users-->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-mail</artifactId>
-    </dependency>
-
-
-    <!-- Lombok for reducing boilerplate code -->
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <optional>true</optional>
-    </dependency>
-</dependencies>
-```
+- [x] Database connection
+- [x] AI Content checker
+- [ ] Admin service
+- [ ] User service
+- [X] Blog service
+- [ ] Security
+- [ ] User interface
 
 ---
 
@@ -134,12 +120,14 @@ Here are the core dependencies currently used in the project:
 
 - This `README.md` file **will be updated regularly** as the project evolves.
 - If **new features or modules** are added, ensure to **document them here** for clarity and team collaboration.
-- All project group members must **follow this Git repository** and **strictly refer to this README file** for consistent development practices.
+- All project group members must **follow this Git repository** and **strictly refer to this README file** for
+  consistent development practices.
 
 ---
 
 ## ✅ Team Commitment
 
-> 📌 **All members of the project group must follow the guidelines and structure mentioned in this repository. Keeping the documentation up-to-date is a shared responsibility.**
+> 📌 **All members of the project group must follow the guidelines and structure mentioned in this repository. Keeping
+the documentation up-to-date is a shared responsibility.**
 
 ---
