@@ -1,5 +1,5 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017
-      database: blog_application_with_ai_integration
+      uri: ${MONGODB_URI}
+      database: blog_application_data

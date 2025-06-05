@@ -6,7 +6,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserUtilityService {
 
-    public String getLoggedInUserName(){
+
+    /**
+     * @return curren_logged_username
+     * this function use for getting the logged user username
+     * */
+    public String getLoggedUserName() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

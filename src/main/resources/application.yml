@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Blog-Application-with-AI-Interation
+    name: "Blog-Application-with-AI-Integration"
   profiles:
     active: dev
 
@@ -8,5 +8,3 @@ server:
   port: 8082
   servlet:
     context-path: /app
-
-
