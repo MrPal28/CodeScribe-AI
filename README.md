@@ -97,7 +97,7 @@ http://localhost:8082/app/
 | Database           | Completed                  | 
 | AI Content checker | Completed but need upgrade | 
 | Admin Service      | pending                    |
-| User Service       | Completed                  | 
+| User Service       | pending                    | 
 | Blog Service       | In Progress                | 
 | Security           | Pending                    | 
 | User Interface     | Pending                    | 
