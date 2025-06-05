@@ -3,3 +3,8 @@ spring:
     mongodb:
       uri: ${MONGODB_URI}
       database: blog_application_data
+
+
+gemini:
+  ai:
+    api: http://localhost:5000
