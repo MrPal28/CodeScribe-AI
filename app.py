@@ -3,20 +3,25 @@ import google.generativeai as genai
 import re
 import os
 from dotenv import load_dotenv
+import logging
 
-# Load environment variables from .env file
+# Load environment variables from .env (for local dev)
 load_dotenv()
 
 app = Flask(__name__)
 
-# Configure Gemini API
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Get API key securely
 API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
+    logger.error("GEMINI_API_KEY is not set in environment variables")
     raise RuntimeError("GEMINI_API_KEY is not set in environment variables")
 
 genai.configure(api_key=API_KEY)
 
-# Default moderation prompt
 default_prompt = (
     "Please analyze the following paragraph and detect any offensive, inappropriate, or slang words. "
     "For each detected word, provide:\n"
@@ -66,7 +71,11 @@ def chat():
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error processing chat request: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Get PORT from environment variable, default 8080 for local
+    port = int(os.getenv("PORT", 8080))
+    app.run(host='0.0.0.0', port=port, debug=False)
