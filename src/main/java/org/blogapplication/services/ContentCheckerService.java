@@ -1,7 +1,7 @@
 package org.blogapplication.services;
 
 
-import jakarta.annotation.PostConstruct;
+import org.blogapplication.cache.AppCache;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.api.response.PromptRequest;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,18 @@ import reactor.core.publisher.Mono;
 @Service
 public class ContentCheckerService {
 
-    private final WebClient webClient;
+    private WebClient webClient;
+    private final AppCache appCache;
 
-    public ContentCheckerService() {
-        this.webClient = WebClient.builder().baseUrl("http://127.0.0.1:5000").build();
+
+    public ContentCheckerService(AppCache appCache) {
+        this.appCache = appCache;
+        initWebClient();
+    }
+
+    public void initWebClient() {
+        String URL = appCache.cache.get(AppCache.key.AI_API.toString());
+        this.webClient = WebClient.builder().baseUrl(URL).build();
     }
 
     public ContentCheckResponse sendPrompt(PromptRequest promptRequest) {

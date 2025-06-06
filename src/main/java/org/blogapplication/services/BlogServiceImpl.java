@@ -1,7 +1,6 @@
 package org.blogapplication.services;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.blogapplication.api.response.PromptRequest;
 import org.blogapplication.dto.BlogDTO;
 import org.blogapplication.entity.Blog;
@@ -15,13 +14,13 @@ public class BlogServiceImpl implements BlogService {
 
 
     private final BlogRepository blogRepository;
+    private final ContentCheckerService contentCheckerService;
 
 
     @Override
     public void saveNewBlog(BlogDTO requestContent) throws RuntimeException {
         PromptRequest promptRequest = new PromptRequest(requestContent.getContent());
-        ContentCheckerService apiResponse = new ContentCheckerService();
-        ContentCheckResponse response = apiResponse.sendPrompt(promptRequest);
+        ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
 
         if (response.isInappropriate()) {
             throw new RuntimeException(response.getModeration_result());
