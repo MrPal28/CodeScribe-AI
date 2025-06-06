@@ -5,7 +5,6 @@ import os
 from dotenv import load_dotenv
 import logging
 
-# Load environment variables from .env (for local dev)
 load_dotenv()
 
 app = Flask(__name__)
@@ -76,6 +75,5 @@ def chat():
 
 
 if __name__ == '__main__':
-    # Get PORT from environment variable, default 8080 for local
     port = int(os.getenv("PORT", 8080))
     app.run(host='0.0.0.0', port=port, debug=False)
