@@ -34,7 +34,7 @@ public class PublicController {
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        try{
+        try {
             return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
         } catch (Exception e) {
             log.error(e.getMessage());
