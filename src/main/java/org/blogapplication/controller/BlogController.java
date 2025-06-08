@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/blog")
+@RequestMapping("/api/blog")
 @RequiredArgsConstructor
 public class BlogController {
 

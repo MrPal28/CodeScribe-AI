@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/public")
+@RequestMapping("/api/public")
 @RequiredArgsConstructor
 public class PublicController {
 
