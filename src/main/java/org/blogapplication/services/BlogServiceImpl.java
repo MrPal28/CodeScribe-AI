@@ -2,7 +2,7 @@ package org.blogapplication.services;
 
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.api.response.PromptRequest;
-import org.blogapplication.dto.BlogDTO;
+import org.blogapplication.dto.BlogRequest;
 import org.blogapplication.entity.Blog;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.repository.BlogRepository;
@@ -18,7 +18,7 @@ public class BlogServiceImpl implements BlogService {
 
 
     @Override
-    public void saveNewBlog(BlogDTO requestContent) throws RuntimeException {
+    public void saveNewBlog(BlogRequest requestContent) throws RuntimeException {
         PromptRequest promptRequest = new PromptRequest(requestContent.getContent());
         ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
 

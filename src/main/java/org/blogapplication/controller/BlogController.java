@@ -2,7 +2,7 @@ package org.blogapplication.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.blogapplication.dto.BlogDTO;
+import org.blogapplication.dto.BlogRequest;
 import org.blogapplication.services.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class BlogController {
 
 
     @PostMapping("/add-new-blog")
-    public ResponseEntity<String> addNewBlog(@RequestBody BlogDTO requestContent) {
+    public ResponseEntity<String> addNewBlog(@RequestBody BlogRequest requestContent) {
         try {
             blogService.saveNewBlog(requestContent);
             return ResponseEntity.status(HttpStatus.OK).body(requestContent.getContent());

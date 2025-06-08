@@ -1,12 +1,14 @@
 package org.blogapplication.services;
 
 import lombok.RequiredArgsConstructor;
-import org.blogapplication.dto.UserDTO;
+import org.blogapplication.dto.ChangePasswordRequest;
+import org.blogapplication.dto.UserRequest;
+import org.blogapplication.dto.UserResponse;
 import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -17,15 +19,67 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void saveNewUser(UserDTO request) {
-        User user = new User();
+    public void saveNewUser(UserRequest request) {
 
-        user.setName(request.getName());
-        userRepository.save(user);
     }
 
     @Override
     public List<User> getAllUsers() {
-        return new ArrayList<>(userRepository.findAll());
+        return List.of();
+    }
+
+    @Override
+    public void updateUserData() {
+
+    }
+
+    @Override
+    public void updateProfileImage(String userId, MultipartFile image) {
+
+    }
+
+    @Override
+    public void deleteAccount(String userId) {
+
+    }
+
+    @Override
+    public boolean validatePassword(String userId, String rawPassword) {
+        return false;
+    }
+
+    @Override
+    public void changePassword(String userId, ChangePasswordRequest request) {
+
+    }
+
+    @Override
+    public void sendPasswordResetEmail(String email) {
+
+    }
+
+    @Override
+    public void resetPassword(String token, String newPassword) {
+
+    }
+
+    @Override
+    public void followUser(String followerId, String targetUserId) {
+
+    }
+
+    @Override
+    public void unfollowUser(String followerId, String targetUserId) {
+
+    }
+
+    @Override
+    public List<UserResponse> getFollowers(String userId) {
+        return List.of();
+    }
+
+    @Override
+    public List<UserResponse> getFollowing(String userId) {
+        return List.of();
     }
 }

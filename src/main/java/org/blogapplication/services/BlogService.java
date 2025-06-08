@@ -1,9 +1,9 @@
 package org.blogapplication.services;
 
 
-import org.blogapplication.dto.BlogDTO;
+import org.blogapplication.dto.BlogRequest;
 
 public interface BlogService {
 
-    void saveNewBlog(BlogDTO requestContent) throws RuntimeException;
+    void saveNewBlog(BlogRequest requestContent) throws RuntimeException;
 }
