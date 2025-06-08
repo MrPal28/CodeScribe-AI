@@ -1,3 +1,6 @@
+# CodeScribe AI - “Built for Devs. Powered by AI.”
+
+
 # 📘 Blog Application with AI Integration
 
 This is a full-featured **Spring Boot** blog application enhanced with **AI capabilities**. It uses **Maven** as the

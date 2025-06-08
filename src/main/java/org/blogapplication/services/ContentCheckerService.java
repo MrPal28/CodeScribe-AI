@@ -1,48 +1,27 @@
 package org.blogapplication.services;
 
 
+import lombok.RequiredArgsConstructor;
 import org.blogapplication.cache.AppCache;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.api.response.PromptRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class ContentCheckerService {
 
-    private WebClient webClient;
+    private final RestTemplate restTemplate;
     private final AppCache appCache;
 
 
-    public ContentCheckerService(AppCache appCache) {
-        this.appCache = appCache;
-        initWebClient();
-    }
+    protected ContentCheckResponse sendPrompt(PromptRequest promptRequest) throws RuntimeException {
+        String API = appCache.cache.get(AppCache.key.AI_API.toString());
+        HttpEntity<PromptRequest> request = new HttpEntity<>(promptRequest);
 
-    public void initWebClient() {
-        String URL = appCache.cache.get(AppCache.key.AI_API.toString());
-        this.webClient = WebClient.builder().baseUrl(URL).build();
-    }
-
-    public ContentCheckResponse sendPrompt(PromptRequest promptRequest) {
-        if (webClient == null) {
-            throw new IllegalStateException("WebClient not initialized. Check if initWebClient() was called.");
-        }
-
-        return webClient.post()
-                .uri("/chat")
-                .bodyValue(promptRequest)
-                .retrieve()
-                .bodyToMono(ContentCheckResponse.class)
-                .onErrorResume(error -> Mono.just(getErrorResponse("AI API error: " + error.getMessage())))
-                .block();
-    }
-
-    private ContentCheckResponse getErrorResponse(String message) {
-        ContentCheckResponse error = new ContentCheckResponse();
-        error.setInput("");
-        error.setModeration_result(message);
-        return error;
+        return restTemplate.exchange(API, HttpMethod.POST, request, ContentCheckResponse.class).getBody();
     }
 }
