@@ -45,6 +45,7 @@ This repository is organized into **three separate branches**, each serving a sp
 - REST APIs
 - MongoDB/MySQL (In the future, we will decide which database technology to use)
 - React
+- Twilio
 
 ---
 
@@ -102,7 +103,9 @@ http://localhost:8082/app/
 | Admin Service      | pending                    |
 | User Service       | pending                    | 
 | Blog Service       | In Progress                | 
-| Security           | Pending                    | 
+| Auth Service       | Completed                  | 
+| Otp Service        | Completed                  | 
+| Security           | Completed                  | 
 | User Interface     | Pending                    | 
 
 ---
@@ -114,7 +117,9 @@ http://localhost:8082/app/
 - [ ] Admin service
 - [ ] User service
 - [X] Blog service
-- [ ] Security
+- [X] Auth service
+- [X] Otp service
+- [x] Security
 - [ ] User interface
 
 ---
