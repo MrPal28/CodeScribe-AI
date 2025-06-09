@@ -8,9 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document(collection = "user_data")
-@NoArgsConstructor
-@Getter
-@Setter
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -30,10 +29,11 @@ public class User {
     @NonNull
     private String phoneNumber;
 
-    private String role;
-
     @NonNull
     private String password;
+    
+    private String role = "ROLE_USER";
+
 
     @Indexed(unique = true)
     private String imgUrl;

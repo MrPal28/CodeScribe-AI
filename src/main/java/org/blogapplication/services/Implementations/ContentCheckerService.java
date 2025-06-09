@@ -1,4 +1,4 @@
-package org.blogapplication.services;
+package org.blogapplication.services.Implementations;
 
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.blogapplication.services;
+package org.blogapplication.services.Implementations;
 
 import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;

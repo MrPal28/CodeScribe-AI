@@ -1,4 +1,4 @@
-package org.blogapplication.services;
+package org.blogapplication.services.Implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.api.response.PromptRequest;
@@ -6,6 +6,7 @@ import org.blogapplication.dto.BlogRequest;
 import org.blogapplication.entity.Blog;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.repository.BlogRepository;
+import org.blogapplication.services.BlogService;
 import org.springframework.stereotype.Component;
 
 @Component

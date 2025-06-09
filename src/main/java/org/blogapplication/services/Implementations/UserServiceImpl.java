@@ -1,11 +1,10 @@
-package org.blogapplication.services;
+package org.blogapplication.services.Implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.dto.ChangePasswordRequest;
-import org.blogapplication.dto.UserRequest;
 import org.blogapplication.dto.UserResponse;
-import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
+import org.blogapplication.services.UserService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,18 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-
-
-    @Override
-    public void saveNewUser(UserRequest request) {
-
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return List.of();
-    }
+    // private final UserRepository userRepository;
 
     @Override
     public void updateUserData() {

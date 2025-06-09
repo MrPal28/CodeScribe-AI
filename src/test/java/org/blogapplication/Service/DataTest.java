@@ -15,7 +15,7 @@ public class DataTest {
 
     @Test
     void saveData(){
-        User user = new User();
+        User user = new User(null, null, null, null, null, null, null, null);
 
         user.setFirstname("Team");
         user.setLastname("Davis");

@@ -1,4 +1,4 @@
-package org.blogapplication.services;
+package org.blogapplication.services.Implementations;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;

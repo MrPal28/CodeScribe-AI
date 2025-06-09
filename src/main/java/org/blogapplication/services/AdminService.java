@@ -2,6 +2,7 @@ package org.blogapplication.services;
 
 import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.dto.UserStatsResponse;
+import org.blogapplication.entity.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,4 +19,12 @@ public interface AdminService {
     void suspendUser(String userId);
 
     boolean isUserActive(String userId);
+
+    /**
+     * this function for admin controller
+     *
+     * @return listOfusers
+     * this function return all users with their data
+     */
+    List<User> getAllUsers();
 }
