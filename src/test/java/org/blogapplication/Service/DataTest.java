@@ -22,7 +22,8 @@ public class DataTest {
         user.setEmail("gamil@gamil.com");
         user.setPassword("gamil");
         user.setPhoneNumber("gamil");
-        user.setRole("ROLE_USER");
+        user.setRole("USER");
         userRepository.save(user);
     }
 }
+
