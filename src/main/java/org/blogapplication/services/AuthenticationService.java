@@ -11,7 +11,8 @@ public interface AuthenticationService {
      *
      * @param request request containing the user details that's can store the database
      */
-UserResponse registerNewUser(UserRequest request);
-  AuthenticationResponse login(AuthenticationRequest authrequest);
- 
+    UserResponse registerNewUser(UserRequest request);
+
+    AuthenticationResponse login(AuthenticationRequest authrequest);
+
 }

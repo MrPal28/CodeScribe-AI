@@ -1,4 +1,4 @@
-package org.blogapplication.api.response;
+package org.blogapplication.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

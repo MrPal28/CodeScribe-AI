@@ -1,5 +1,6 @@
 package org.blogapplication.Service;
 
+import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

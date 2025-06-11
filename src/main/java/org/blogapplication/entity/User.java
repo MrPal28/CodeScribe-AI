@@ -47,5 +47,6 @@ public class User {
 
     @DBRef // this annotation using for make a reference of another collections
     @JsonProperty("Blog_data")
+    @Builder.Default
     private List<BlogEntries> blogEntries = new ArrayList<>();
 }

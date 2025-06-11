@@ -12,13 +12,6 @@ public class AITest {
     @Autowired
     private BlogService blogService;
 
-    @Test
-    void serviceTest() {
-        BlogRequest  blogRequest = new BlogRequest();
-        blogRequest.setContent("Hello World bitch");
-
-        blogService.saveNewBlog(blogRequest);
-    }
 
 
 }

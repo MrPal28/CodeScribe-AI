@@ -31,6 +31,10 @@ public interface UserService {
 
     void unfollowUser(String followerId, String targetUserId);
 
+    void saveUser(User user);
+
+    User getByUsername(String username);
+
     List<UserResponse> getFollowers(String userId);
 
     List<UserResponse> getFollowing(String userId);

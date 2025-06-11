@@ -3,6 +3,7 @@ package org.blogapplication.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.blogapplication.dto.BlogRequest;
+import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.services.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,15 @@ public class BlogController {
 
 
     @PostMapping("/add-new-blog")
-    public ResponseEntity<String> addNewBlog(@RequestBody BlogRequest requestContent) {
+    public ResponseEntity<BlogResponse> addNewBlog(@RequestBody BlogRequest requestContent) {
         try {
-            blogService.saveNewBlog(requestContent);
-            return ResponseEntity.status(HttpStatus.OK).body(requestContent.getContent());
+            BlogResponse response = blogService.createBlog(requestContent);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
             log.error("Runtime error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Server error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

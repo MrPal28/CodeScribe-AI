@@ -2,8 +2,9 @@ package org.blogapplication.services;
 
 
 import org.blogapplication.dto.BlogRequest;
+import org.blogapplication.dto.BlogResponse;
 
 public interface BlogService {
 
-    void saveNewBlog(BlogRequest requestContent) throws RuntimeException;
+    BlogResponse createBlog(BlogRequest blogRequest);
 }
