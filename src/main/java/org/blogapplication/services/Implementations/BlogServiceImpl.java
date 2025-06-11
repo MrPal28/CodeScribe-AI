@@ -3,7 +3,7 @@ package org.blogapplication.services.Implementations;
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.api.response.PromptRequest;
 import org.blogapplication.dto.BlogRequest;
-import org.blogapplication.entity.Blog;
+import org.blogapplication.entity.BlogEntries;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.repository.BlogRepository;
 import org.blogapplication.services.BlogService;
@@ -27,9 +27,9 @@ public class BlogServiceImpl implements BlogService {
             throw new RuntimeException(response.getModeration_result());
         }
 
-        Blog blog = new Blog();
-        blog.setContent(requestContent.getContent());
+        BlogEntries blogEntries = new BlogEntries();
+        blogEntries.setContent(requestContent.getContent());
 
-        blogRepository.save(blog);
+        blogRepository.save(blogEntries);
     }
 }

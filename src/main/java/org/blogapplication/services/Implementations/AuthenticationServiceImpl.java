@@ -17,25 +17,32 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.security.SecureRandom;
+
 @Service
 @RequiredArgsConstructor
-public class AuthenticationServiceImpl implements AuthenticationService{
-  
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
-  private final AuthenticationManager authenticationManager;
-  private final UserDetailsService userDetailsService;
-  private final JwtUtil jwtUtil;
+public class AuthenticationServiceImpl implements AuthenticationService {
+    private final EmailService emailService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
-  @Override
-  public UserResponse registerNewUser(UserRequest request) {
-    User newUser = convertToEntity(request);
-         newUser = userRepository.save(newUser);
-         return convertToResponse(newUser);
-  }
+    @Override
+    public UserResponse registerNewUser(UserRequest request) {
+        User newUser = convertToEntity(request);
+        newUser = userRepository.save(newUser);
 
-   private User convertToEntity(UserRequest request){
+        // send email
+        emailService.sendSuccessfulEmail(request.getEmail(), request.getFirstname() + " " + request.getLastname());
+
+        return convertToResponse(newUser);
+    }
+
+    private User convertToEntity(UserRequest request) {
         return User.builder()
+                .username(request.getFirstname() + request.getLastname() + randomStringGenerator())
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
@@ -44,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .build();
     }
 
-    private UserResponse convertToResponse(User registeredUser){
+    private UserResponse convertToResponse(User registeredUser) {
         return UserResponse.builder()
                 .id(registeredUser.getId())
                 .firstname((registeredUser.getFirstname()))
@@ -54,16 +61,25 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .build();
     }
 
-  @Override
-  public AuthenticationResponse login(AuthenticationRequest authrequest) {
-    
-    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authrequest.getEmail() ,authrequest.getPassword()));
-    final UserDetails userDetails = userDetailsService.loadUserByUsername(authrequest.getEmail());
-    final String jwtToken = jwtUtil.generateToken(userDetails);
+    private String randomStringGenerator() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder stringBuilder = new StringBuilder();
+        String combination = "1234567890!@#$%^&*()<>";
 
-    return new AuthenticationResponse(authrequest.getEmail(),jwtToken);
-  }
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(combination.length());
+            stringBuilder.append(combination.charAt(index));
+        }
+        return stringBuilder.toString();
+    }
 
+    @Override
+    public AuthenticationResponse login(AuthenticationRequest authrequest) {
 
-  
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authrequest.getEmail(), authrequest.getPassword()));
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authrequest.getEmail());
+        final String jwtToken = jwtUtil.generateToken(userDetails);
+
+        return new AuthenticationResponse(authrequest.getEmail(), jwtToken);
+    }
 }

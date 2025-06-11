@@ -1,9 +1,9 @@
-# CodeScribe AI - “Built for Devs. Powered by AI.”
+ # CodeScribe AI - “Built for Devs. Powered by AI.”
 
 
 # 📘 Blog Application with AI Integration
 
-This is a full-featured **Spring Boot** blog application enhanced with **AI capabilities**. It uses **Maven** as the
+This is a full-featured **Spring Boot** blogEntries application enhanced with **AI capabilities**. It uses **Maven** as the
 build automation tool and follows modular, maintainable architecture principles.
 
 ---
@@ -23,14 +23,14 @@ This repository is organized into **three separate branches**, each serving a sp
 
 ### 🔹 `ai_api`
 
-> 🤖 Dedicated to the **AI-powered API** that handles intelligent blog post suggestions and processing.
+> 🤖 Dedicated to the **AI-powered API** that handles intelligent blogEntries post suggestions and processing.
 > 🔗 [Access the `ai_api` branch](https://github.com/MrPal28/Blog-Application-With-AI-Integration/tree/ai_api)
 
 ---
 
 ### 🔹 `Front-end-react`
 
-> 🎨 Contains the complete **React-based front-end** code for the blog application interface.
+> 🎨 Contains the complete **React-based front-end** code for the blogEntries application interface.
 > 🔗 [Access the
 `Front-end-react` branch](https://github.com/MrPal28/Blog-Application-With-AI-Integration/tree/Front-end-react)
 

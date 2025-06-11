@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document(collection = "Blog_data")
-public class Blog {
+public class BlogEntries {
 
     // all fields are change later
     @Id

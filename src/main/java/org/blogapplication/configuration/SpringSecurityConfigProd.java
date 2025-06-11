@@ -1,5 +1,7 @@
 package org.blogapplication.configuration;
 
+
+import org.blogapplication.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
