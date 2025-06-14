@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -39,6 +41,12 @@ public class BlogServiceImpl implements BlogService {
         BlogEntries newBlogEntry = convertToEntity(blogRequest);
         newBlogEntry = blogRepository.save(newBlogEntry);
         return convertToResponse(newBlogEntry);
+    }
+
+    @Override
+    public List<BlogResponse> getAllBlogs() {
+        List<BlogResponse> all = Collections.singletonList(convertToResponse((BlogEntries) blogRepository.findAll()));
+        return List.of((BlogResponse) all);
     }
 
 
