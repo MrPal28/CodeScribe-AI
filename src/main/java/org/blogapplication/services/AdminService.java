@@ -23,7 +23,7 @@ public interface AdminService {
     /**
      * this function for admin controller
      *
-     * @return listOfusers
+     * @return list Of users
      * this function return all users with their data
      */
     List<User> getAllUsers();

@@ -1,5 +1,6 @@
 package org.blogapplication.services.Implementations;
 
+import org.blogapplication.constants.Roles;
 import org.blogapplication.dto.AuthenticationRequest;
 import org.blogapplication.dto.AuthenticationResponse;
 import org.blogapplication.dto.UserRequest;
@@ -8,16 +9,19 @@ import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.AuthenticationService;
 import org.blogapplication.util.JwtUtil;
+import org.blogapplication.util.UserUtilityService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import java.security.SecureRandom;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private final UserUtilityService userUtilityService;
 
     @Override
     public UserResponse registerNewUser(UserRequest request) {
@@ -40,12 +45,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return convertToResponse(newUser);
     }
 
+    @Override
+    public UserResponse getLoggedUser() {
+        String email = userUtilityService.getLoggedUserName();
+        User user = findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return convertToResponse(user);
+    }
+
+    private Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     private User convertToEntity(UserRequest request) {
         return User.builder()
-                .username(request.getFirstname() + request.getLastname() + randomStringGenerator())
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
+                .role(List.of(Roles.ROLE_USER.toString()))
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
@@ -58,19 +74,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .lastName(registeredUser.getLastname())
                 .email(registeredUser.getEmail())
                 .phoneNumber(registeredUser.getPhoneNumber())
+                .role(registeredUser.getRole())
                 .build();
-    }
-
-    private String randomStringGenerator() {
-        SecureRandom random = new SecureRandom();
-        StringBuilder stringBuilder = new StringBuilder();
-        String combination = "1234567890!@#$%^&*()<>";
-
-        for (int i = 0; i < 6; i++) {
-            int index = random.nextInt(combination.length());
-            stringBuilder.append(combination.charAt(index));
-        }
-        return stringBuilder.toString();
     }
 
     @Override

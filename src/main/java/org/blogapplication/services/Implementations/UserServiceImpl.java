@@ -68,11 +68,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    @Override
     public List<UserResponse> getFollowers(String userId) {
         return List.of();
     }

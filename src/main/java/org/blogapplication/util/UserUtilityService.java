@@ -1,5 +1,6 @@
 package org.blogapplication.util;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ public class UserUtilityService {
      * this function use for getting the logged user username
      * */
     public String getLoggedUserName() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }

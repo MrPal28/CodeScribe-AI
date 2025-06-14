@@ -1,7 +1,6 @@
 package org.blogapplication.services;
 
 import org.blogapplication.dto.ChangePasswordRequest;
-import org.blogapplication.dto.UserRequest;
 import org.blogapplication.dto.UserResponse;
 import org.blogapplication.entity.User;
 import org.springframework.stereotype.Service;
@@ -32,8 +31,6 @@ public interface UserService {
     void unfollowUser(String followerId, String targetUserId);
 
     void saveUser(User user);
-
-    User getByUsername(String username);
 
     List<UserResponse> getFollowers(String userId);
 

@@ -21,7 +21,6 @@ public class User {
     @Id
     private String id;
 
-    private String username;
 
     @NonNull
     private String firstname;
@@ -40,7 +39,7 @@ public class User {
     @NonNull
     private String password;
     
-    private String role = "ROLE_USER";
+    private List<String> role;
 
     @Indexed(unique = true)
     private String imgUrl;

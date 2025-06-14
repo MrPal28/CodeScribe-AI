@@ -33,31 +33,33 @@ public class PublicController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> register(@RequestBody UserRequest request) {
-        boolean isOtpValid = otpService.verifyOtp(request.getPhoneNumber(), request.getOtp());
+        try {
+            boolean isOtpValid = otpService.verifyOtp(request.getPhoneNumber(), request.getOtp());
 
-        if (!isOtpValid) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid OTP");
+            if (!isOtpValid) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid OTP");
+            }
+
+            UserResponse response = authenticationService.registerNewUser(request);
+            otpService.clearOtp(request.getPhoneNumber());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
-        UserResponse response = authenticationService.registerNewUser(request);
-        otpService.clearOtp(request.getPhoneNumber());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(
-            @RequestBody AuthenticationRequest request,
-            HttpServletResponse response
-    ) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
         try {
             AuthenticationResponse authResponse = authenticationService.login(request);
 
-            // 1. Create a cookie for JWT token
             Cookie jwtCookie = new Cookie("jwt", authResponse.getToken());
-            jwtCookie.setHttpOnly(true);            // Prevent JavaScript access
-            jwtCookie.setPath("/");                 // Available to all paths
-            jwtCookie.setMaxAge(24 * 60 * 60);      // 1 day expiry
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(24 * 60 * 60);
             response.addCookie(jwtCookie);
 
             return ResponseEntity.ok(authResponse);

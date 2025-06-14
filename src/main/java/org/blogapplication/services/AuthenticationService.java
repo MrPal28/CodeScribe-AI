@@ -15,4 +15,5 @@ public interface AuthenticationService {
 
     AuthenticationResponse login(AuthenticationRequest authrequest);
 
+    UserResponse getLoggedUser();
 }
