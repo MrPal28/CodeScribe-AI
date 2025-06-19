@@ -2,25 +2,26 @@ package org.blogapplication.services.Implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.dto.BlogResponse;
-import org.blogapplication.dto.UserStatsResponse;
+import org.blogapplication.dto.UserResponse;
 import org.blogapplication.entity.User;
+import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.AdminService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
+    private final UserRepository userRepository;
+
+
     @Override
     public List<BlogResponse> getUserBlogs(String userId) {
         return List.of();
     }
 
-    @Override
-    public UserStatsResponse getUserStats(String userId) {
-        return null;
-    }
 
     @Override
     public void promoteToAdmin(String userId) {
@@ -38,8 +39,15 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllUsers'");
+    public List<UserResponse> getAllUsers() {
+        List<User> allUsers = userRepository.findAll();
+        return allUsers.stream().map(user -> new UserResponse(
+                user.getId(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getRole()
+        )).collect(Collectors.toList());
     }
 }
