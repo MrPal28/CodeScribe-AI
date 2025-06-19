@@ -3,6 +3,7 @@ package org.blogapplication.services.Implementations;
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.dto.ChangePasswordRequest;
 import org.blogapplication.dto.UserResponse;
+import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.UserService;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    // private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void updateUserData() {
@@ -59,6 +60,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void unfollowUser(String followerId, String targetUserId) {
 
+    }
+
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
     @Override

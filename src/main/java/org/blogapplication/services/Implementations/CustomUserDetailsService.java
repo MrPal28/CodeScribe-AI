@@ -1,19 +1,21 @@
 package org.blogapplication.services.Implementations;
 
+import lombok.RequiredArgsConstructor;
 import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository; 
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -21,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole()) // e.g., "ROLE_USER,ROLE_ADMIN"
+                AuthorityUtils.commaSeparatedStringToAuthorityList(List.of(user.getRole()).toString()) // e.g., "ROLE_USER,ROLE_ADMIN"
         );
     }
 }
