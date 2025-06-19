@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserRequest {
 
-    private String id;
+    
     private String firstname;
     private String lastname;
     private String email;
