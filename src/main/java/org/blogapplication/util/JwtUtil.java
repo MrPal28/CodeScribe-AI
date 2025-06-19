@@ -3,9 +3,11 @@ package org.blogapplication.util;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -34,10 +36,10 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                   .setSigningKey(getSigningKey())
-                   .build()
-                   .parseClaimsJws(token)
-                   .getBody();
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
@@ -46,11 +48,13 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
+        // collect roles
+        Set<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("authorities", AuthorityUtils.authorityListToSet(userDetails.getAuthorities()))
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+                .claim("authorities",String.join(",",roles))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60* 10)) // token valid for 10 hours
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
