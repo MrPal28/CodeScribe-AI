@@ -7,11 +7,12 @@ import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.AdminService;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
