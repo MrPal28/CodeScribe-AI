@@ -1,30 +1,53 @@
 package org.blogapplication.services;
 
+import org.blogapplication.constants.UserStatus;
 import org.blogapplication.dto.BlogResponse;
-import org.blogapplication.dto.UserStatsResponse;
+import org.blogapplication.dto.BlogStatsResponse;
+import org.blogapplication.dto.PlatformStatsResponse;
+import org.blogapplication.dto.UserActivityResponse;
 import org.blogapplication.entity.User;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
-@Service
 public interface AdminService {
-    List<BlogResponse> getUserBlogs(String userId);
 
-    UserStatsResponse getUserStats(String userId);
+    // USER MANAGEMENT
+    void deactivateUser(String userId);
+
+    void reactivateUser(String userId);
+
+    void softDeleteUser(String userId);
+
+    void hardDeleteUser(String userId);
+
+    void updateUserRoles(String userId, List<String> roles);
+
+    List<User> getUsersByStatus(UserStatus status);
+
+    List<User> getUsersByRole(String role);
+
+    boolean isUserActive(String userId);
+
+    String getUserStats(String userId);
 
     void promoteToAdmin(String userId);
 
     void suspendUser(String userId);
 
-    boolean isUserActive(String userId);
-
-    /**
-     * this function for admin controller
-     *
-     * @return list Of users
-     * this function return all users with their data
-     */
     List<User> getAllUsers();
+
+    // BLOG MODERATION
+    void rejectBlog(String blogId, String reason);
+
+    void deleteBlog(String blogId);
+
+    List<BlogResponse> getUserBlogs(String userId);
+
+    // SYSTEM ANALYTICS
+    BlogStatsResponse getBlogStats(); // Example: { totalBlogs: 123, published: 100, pending: 23 }
+
+    PlatformStatsResponse getPlatformStats();
+
+    List<UserActivityResponse> getTopContributors();
+
 }

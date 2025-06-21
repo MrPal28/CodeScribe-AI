@@ -2,6 +2,8 @@ package org.blogapplication.entity;
 
 
 import lombok.*;
+
+import org.blogapplication.constants.BlogStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,4 +26,7 @@ public class BlogEntries {
     private String content;
 
     private LocalDateTime createdDate;
+    private boolean isAiApproved;
+
+    private BlogStatus status;
 }

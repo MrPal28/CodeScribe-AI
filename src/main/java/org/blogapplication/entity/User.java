@@ -3,6 +3,8 @@ package org.blogapplication.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+
+import org.blogapplication.constants.UserStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -43,6 +45,8 @@ public class User {
 
     @Indexed(unique = true)
     private String imgUrl;
+
+    private UserStatus userStatus; // ACTIVE , INACTIVE, PENDING, BLOCKED,DELETED,SUSPENDED,BANNED,UNVERIFIED, LOCKED
 
     @DBRef // this annotation using for make a reference of another collections
     @JsonProperty("Blog_data")

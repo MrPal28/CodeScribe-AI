@@ -2,15 +2,13 @@ package org.blogapplication.services.Implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.model.PromptRequest;
+import org.blogapplication.constants.BlogStatus;
 import org.blogapplication.dto.BlogRequest;
 import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.entity.BlogEntries;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.repository.BlogRepository;
-import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.BlogService;
-import org.blogapplication.services.UserService;
-import org.blogapplication.util.UserUtilityService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +19,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class BlogServiceImpl implements BlogService {
-    private final UserService userService;
-    private final UserUtilityService userUtilityService;
     private final BlogRepository blogRepository;
-    private final UserRepository userRepository;
     private final ContentCheckerService contentCheckerService;
-
 
     @Transactional
     @Override
@@ -39,6 +33,8 @@ public class BlogServiceImpl implements BlogService {
         }
 
         BlogEntries newBlogEntry = convertToEntity(blogRequest);
+        newBlogEntry.setAiApproved(true);
+        newBlogEntry.setStatus(BlogStatus.APPROVED);
         newBlogEntry = blogRepository.save(newBlogEntry);
         return convertToResponse(newBlogEntry);
     }
