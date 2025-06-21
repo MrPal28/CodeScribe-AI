@@ -9,7 +9,6 @@ import org.blogapplication.entity.BlogEntries;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.repository.BlogRepository;
 import org.blogapplication.services.BlogService;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
