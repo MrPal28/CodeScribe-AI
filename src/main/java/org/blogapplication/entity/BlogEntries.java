@@ -1,6 +1,7 @@
 package org.blogapplication.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import org.blogapplication.constants.BlogStatus;
@@ -25,6 +26,8 @@ public class BlogEntries {
     @NonNull
     private String content;
 
+
+    @JsonProperty("create_at")
     private LocalDateTime createdDate;
     private boolean isAiApproved;
 

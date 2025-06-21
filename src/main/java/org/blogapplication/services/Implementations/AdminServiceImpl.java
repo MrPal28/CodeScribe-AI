@@ -15,14 +15,16 @@ import org.blogapplication.repository.BlogRepository;
 import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.AdminService;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 

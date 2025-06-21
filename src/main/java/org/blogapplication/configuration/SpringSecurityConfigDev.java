@@ -13,9 +13,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+
+import java.io.PrintWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +40,7 @@ public class SpringSecurityConfigDev {
                         .requestMatchers("/api/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedEntryPoint()))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -51,4 +55,15 @@ public class SpringSecurityConfigDev {
         return new ProviderManager(authProvider);
     }
 
+    @Bean
+    public AuthenticationEntryPoint unauthorizedEntryPoint() {
+        return (request, response, authException) -> {
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.write("{\n" +
+                    "\t\"error\":\"Unauthorize\",\n" +
+                    "\t\"message:" + authException.getMessage() + "\n" +
+                    "}");
+        };
+    }
 }

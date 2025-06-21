@@ -3,13 +3,11 @@ package org.blogapplication.services;
 import org.blogapplication.dto.ChangePasswordRequest;
 import org.blogapplication.dto.UserResponse;
 import org.blogapplication.entity.User;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.String;
 import java.util.List;
 
-@Service
 public interface UserService {
 
     void updateUserData();
