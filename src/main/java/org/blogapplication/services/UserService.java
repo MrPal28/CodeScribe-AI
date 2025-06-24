@@ -2,6 +2,7 @@ package org.blogapplication.services;
 
 import org.blogapplication.dto.ChangePasswordRequest;
 import org.blogapplication.dto.UserResponse;
+import org.blogapplication.dto.UserUpdateRequest;
 import org.blogapplication.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,15 +11,15 @@ import java.util.List;
 
 public interface UserService {
 
-    void updateUserData();
+    void updateUserData(UserUpdateRequest request);
 
-    void updateProfileImage(String userId, MultipartFile image);
+    void updateProfileImage(MultipartFile image);
 
-    void deleteAccount(String userId);
+    void deleteAccount();
 
-    boolean validatePassword(String userId, String rawPassword);
+    boolean validatePassword(String rawPassword);
 
-    void changePassword(String userId, ChangePasswordRequest request);
+    void changePassword(ChangePasswordRequest request);
 
     void sendPasswordResetEmail(String email);
 

@@ -14,4 +14,5 @@ public class ImageEntity {
     private String id;
     private String publicId;
     private String imageUrl;
+    private String imageType;
 }

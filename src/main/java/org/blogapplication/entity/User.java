@@ -43,8 +43,7 @@ public class User {
 
     private List<String> role;
 
-    @Indexed(unique = true)
-    private String imgUrl;
+    private String profileImageId;
 
     private UserStatus userStatus; // ACTIVE , INACTIVE, PENDING, BLOCKED,DELETED,SUSPENDED,BANNED,UNVERIFIED, LOCKED
 

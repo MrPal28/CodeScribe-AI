@@ -1,50 +1,105 @@
 package org.blogapplication.services.Implementations;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.blogapplication.dto.ChangePasswordRequest;
 import org.blogapplication.dto.UserResponse;
+import org.blogapplication.dto.UserUpdateRequest;
+import org.blogapplication.entity.ImageEntity;
 import org.blogapplication.entity.User;
 import org.blogapplication.repository.UserRepository;
+import org.blogapplication.services.ImageService;
 import org.blogapplication.services.UserService;
-import org.springframework.stereotype.Component;
+import org.blogapplication.util.UserUtilityService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
-@Component
+@Slf4j
+@Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserUtilityService userUtilityService;
+    private final ImageService imageService;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
-    public void updateUserData() {
+    public void updateUserData(UserUpdateRequest request) {
+        // get the logged user details
+        User exitsUser = loggedUser();
 
+        // update with comparing existing user details
+        User updateUser = User.builder()
+                .firstname(request.getFirstname() == null ? exitsUser.getFirstname() : request.getFirstname())
+                .lastname(request.getLastname() == null ? exitsUser.getLastname() : request.getLastname())
+                .email(request.getEmail() == null ? exitsUser.getEmail() : request.getEmail())
+                .phoneNumber(request.getPhoneNumber() == null ? exitsUser.getPhoneNumber() : request.getPhoneNumber())
+                .build();
+
+        // save in database
+        userRepository.save(updateUser);
     }
 
     @Override
-    public void updateProfileImage(String userId, MultipartFile image) {
+    public void updateProfileImage(MultipartFile image) {
+        // get the logged user details
+        User exitsUser = loggedUser();
 
+        try {
+            ImageEntity uploadImage;
+
+            if (exitsUser.getProfileImageId() != null) {
+                uploadImage = imageService.replaceImage(exitsUser.getProfileImageId(), image);
+            } else {
+                uploadImage = imageService.uploadImage(image);
+            }
+
+            exitsUser.setProfileImageId(uploadImage.getId());
+            userRepository.save(exitsUser);
+        } catch (IOException e) {
+            log.error("Error while updating profile image: ", e);
+            throw new UsernameNotFoundException("User not found");
+        }
     }
 
     @Override
-    public void deleteAccount(String userId) {
-
+    public void deleteAccount() {
+        // get the logged user details
+        userRepository.delete(loggedUser());
     }
 
     @Override
-    public boolean validatePassword(String userId, String rawPassword) {
-        return false;
+    public boolean validatePassword(String rawPassword) {
+        return passwordEncoder.matches(rawPassword, loggedUser().getPassword());
     }
 
     @Override
-    public void changePassword(String userId, ChangePasswordRequest request) {
+    public void changePassword(ChangePasswordRequest request) {
+        User exitsUser = loggedUser();
 
+        // if old password is validated
+        if (validatePassword(request.getOldPassword())) {
+            exitsUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(exitsUser);
+
+            // after save new password send password reset email with logged user email
+            sendPasswordResetEmail(loggedUser().getEmail());
+        } else {
+            throw new UsernameNotFoundException("Old Password Not Valid");
+        }
     }
 
     @Override
     public void sendPasswordResetEmail(String email) {
-
+        String username = loggedUser().getFirstname() + " " + loggedUser().getLastname();
+        emailService.sendPasswordResetEmail(email, username);
     }
 
     @Override
@@ -75,5 +130,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponse> getFollowing(String userId) {
         return List.of();
+    }
+
+    private User loggedUser() {
+        return userRepository.findByEmail(userUtilityService.getLoggedUserName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
