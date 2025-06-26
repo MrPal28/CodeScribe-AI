@@ -13,6 +13,6 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     Optional<User> findByEmail(String email);
     List<User> findByUserStatus(UserStatus status);
-    List<User> findByRolesContaining(String role);
+    List<User> findByRole(List<String> role);
     long countByUserStatus(UserStatus active);
 }

@@ -129,7 +129,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<User> getUsersByRole(String role) {
-        return userRepository.findByRolesContaining(role);
+        return userRepository.findByRole(List.of(role));
     }
 
     @Override

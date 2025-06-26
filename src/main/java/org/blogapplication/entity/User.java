@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Document(collection = "user_data")
@@ -43,7 +44,8 @@ public class User {
 
     private List<String> role;
 
-    private String profileImageId;
+    // store image id and url
+    private Map<String, String> profileImage;
 
     private UserStatus userStatus; // ACTIVE , INACTIVE, PENDING, BLOCKED,DELETED,SUSPENDED,BANNED,UNVERIFIED, LOCKED
 

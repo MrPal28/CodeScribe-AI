@@ -1,6 +1,7 @@
 package org.blogapplication.services.Implementations;
 
 import org.blogapplication.constants.Roles;
+import org.blogapplication.constants.UserStatus;
 import org.blogapplication.dto.AuthenticationRequest;
 import org.blogapplication.dto.AuthenticationResponse;
 import org.blogapplication.dto.UserRequest;
@@ -63,6 +64,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(request.getEmail())
                 .role(List.of(Roles.ROLE_USER.toString()))
                 .phoneNumber(request.getPhoneNumber())
+                .userStatus(UserStatus.ACTIVE)
+                .profileImage(null)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
     }

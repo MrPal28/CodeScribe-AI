@@ -31,13 +31,13 @@ public class UserController {
         }
     }
 
-    @PostMapping("/update-user-details")
-    public ResponseEntity<UserResponse> updateUserDetails(UserRequest userRequest) {
-        try {
-
-        } catch (Exception e) {
-            log.error("Error updating user details: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    }
+//    @PostMapping("/update-user-details")
+//    public ResponseEntity<UserResponse> updateUserDetails(UserRequest userRequest) {
+//        try {
+//
+//        } catch (Exception e) {
+//            log.error("Error updating user details: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//    }
 }

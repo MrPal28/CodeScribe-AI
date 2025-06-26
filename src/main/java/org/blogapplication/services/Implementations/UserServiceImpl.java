@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -49,23 +51,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateProfileImage(MultipartFile image) {
-        // get the logged user details
-        User exitsUser = loggedUser();
+        // get the logged user
+        User existUser = loggedUser();
 
         try {
             ImageEntity uploadImage;
 
-            if (exitsUser.getProfileImageId() != null) {
-                uploadImage = imageService.replaceImage(exitsUser.getProfileImageId(), image);
+            if (existUser.getProfileImage() != null && existUser.getProfileImage().get("id") != null) {
+                // replace with exiting image
+                String imageId = existUser.getProfileImage().get("id");
+                uploadImage = imageService.replaceImage(imageId, image);
             } else {
+                // upload a new image
                 uploadImage = imageService.uploadImage(image);
             }
 
-            exitsUser.setProfileImageId(uploadImage.getId());
-            userRepository.save(exitsUser);
+            Map<String, String> profileImageMap = new HashMap<>();
+            profileImageMap.put("id", uploadImage.getId());
+            profileImageMap.put("url", uploadImage.getImageUrl());
+
+            existUser.setProfileImage(profileImageMap);
+            userRepository.save(existUser);
         } catch (IOException e) {
             log.error("Error while updating profile image: ", e);
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("Failed to update profile image");
         }
     }
 
