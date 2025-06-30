@@ -24,6 +24,9 @@ public class BlogEntries {
     private String title;
 
     @NonNull
+    private String authorName;
+
+    @NonNull
     private String content;
 
 

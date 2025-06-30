@@ -7,6 +7,8 @@ import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.services.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,4 +36,20 @@ public class BlogController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @DeleteMapping("/delete-blog/{blogId}")
+    public ResponseEntity<Void> deleteBlog(@PathVariable String blogId) {
+        try {
+            blogService.deleteBlog(blogId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RuntimeException e) {
+            log.error("Runtime error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            log.error("Server error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    
 }

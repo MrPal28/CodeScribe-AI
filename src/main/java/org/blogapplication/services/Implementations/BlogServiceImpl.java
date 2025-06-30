@@ -9,6 +9,7 @@ import org.blogapplication.entity.BlogEntries;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.repository.BlogRepository;
 import org.blogapplication.services.BlogService;
+import org.blogapplication.util.UserUtilityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class BlogServiceImpl implements BlogService {
     private final BlogRepository blogRepository;
     private final ContentCheckerService contentCheckerService;
+    private final UserUtilityService userUtilityService;
 
     @Transactional
     @Override
@@ -35,6 +37,7 @@ public class BlogServiceImpl implements BlogService {
         BlogEntries newBlogEntry = convertToEntity(blogRequest);
         newBlogEntry.setAiApproved(true);
         newBlogEntry.setStatus(BlogStatus.APPROVED);
+        newBlogEntry.setAuthorName(userUtilityService.getLoggedUserName());
         newBlogEntry = blogRepository.save(newBlogEntry);
         return convertToResponse(newBlogEntry);
     }
@@ -61,5 +64,17 @@ public class BlogServiceImpl implements BlogService {
                 .content(blogEntry.getContent())
                 .createdDate(blogEntry.getCreatedDate())
                 .build();
+    }
+
+    
+    
+
+    @Override
+    public Void deleteBlog(String blogId) {
+      
+        BlogEntries blogEntry = blogRepository.findById(blogId)
+                .orElseThrow(() -> new RuntimeException("Blog not found with id: " + blogId));
+        blogRepository.delete(blogEntry);
+        return null;
     }
 }

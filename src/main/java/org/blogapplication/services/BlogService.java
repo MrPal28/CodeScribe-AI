@@ -11,4 +11,6 @@ public interface BlogService {
     BlogResponse createBlog(BlogRequest blogRequest);
 
     List<BlogResponse> getAllBlogs();
+
+    Void deleteBlog(String id);
 }
