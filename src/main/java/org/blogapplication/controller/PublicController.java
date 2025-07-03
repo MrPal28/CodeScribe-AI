@@ -24,6 +24,11 @@ public class PublicController {
     private final AuthenticationService authenticationService;
     private final OtpService otpService;
 
+    @GetMapping("/")
+    public String getString(){
+        return "OK";
+    }
+
     @PostMapping("/send-otp")
     public ResponseEntity<String> sendOtp(@RequestBody OtpRequest request) {
         otpService.generateAndSendOtp(request.getPhoneNumber());
@@ -48,7 +53,6 @@ public class PublicController {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     @PostMapping("/login")
@@ -61,7 +65,7 @@ public class PublicController {
             jwtCookie.setPath("/");
             jwtCookie.setMaxAge(24 * 60 * 60);
             response.addCookie(jwtCookie);
-
+            log.info("Log in successful");
             return ResponseEntity.ok(authResponse);
         } catch (Exception e) {
             log.error("Login failed: {}", e.getMessage());

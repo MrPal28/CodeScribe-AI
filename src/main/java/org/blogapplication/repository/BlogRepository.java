@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BlogRepository extends MongoRepository<BlogEntries, String> {
 
-  Object findByAuthor(String loggedInUser);
+//  Object findByAuthor(String loggedInUser);
 }

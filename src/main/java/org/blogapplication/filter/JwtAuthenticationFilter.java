@@ -1,4 +1,3 @@
-
 package org.blogapplication.filter;
 
 import jakarta.servlet.FilterChain;
@@ -27,16 +26,15 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
-
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
         return path.startsWith("/api/public");
     }
-
 
     @Override
     protected void doFilterInternal(
@@ -66,34 +64,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // 3. Validate and set authentication
-        if (jwt != null) { // Check if the JWT toke is not null
+        if (jwt != null) {
             try {
-                String email = jwtUtil.extractUsername(jwt); // get email from the jwt token
-                String roleString = jwtUtil.extractRoles(jwt); // get roles from the jwt token
+                String email = jwtUtil.extractUsername(jwt);
+                String roleString = jwtUtil.extractRoles(jwt);
 
-                //run only if email not null and provide email not authenticated
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // load the user details from the database using email
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                    // validate the token
                     if (jwtUtil.validateToken(jwt, userDetails)) {
-                        // convert the coma separated roles string into a list of spring security authority
-                        List<SimpleGrantedAuthority> authorities = roleString.isBlank() ? Collections.emptyList() : Arrays.stream(roleString.split(",")).map(String::trim).map(SimpleGrantedAuthority::new).toList();
+                        List<SimpleGrantedAuthority> authorities = roleString.isBlank()
+                                ? Collections.emptyList()
+                                : Arrays.stream(roleString.split(","))
+                                .map(String::trim)
+                                .map(SimpleGrantedAuthority::new)
+                                .toList();
 
-                        // created an authentication token using the user details and extract authorities
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-
-                        // set additional details from the HTTP request [session,etc...]
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                        // set the authentication object into security context
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 }
 
             } catch (Exception e) {
-                // any exception response set unauthorized
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }

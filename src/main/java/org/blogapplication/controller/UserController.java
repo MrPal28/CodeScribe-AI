@@ -1,8 +1,9 @@
 package org.blogapplication.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.blogapplication.dto.UserRequest;
 import org.blogapplication.dto.UserResponse;
 import org.blogapplication.services.AuthenticationService;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -31,13 +32,13 @@ public class UserController {
         }
     }
 
-//    @PostMapping("/update-user-details")
-//    public ResponseEntity<UserResponse> updateUserDetails(UserRequest userRequest) {
-//        try {
-//
-//        } catch (Exception e) {
-//            log.error("Error updating user details: {}", e.getMessage());
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
+    @PostMapping("/log-out")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("jwt", null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+        response.addCookie(jwtCookie);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
