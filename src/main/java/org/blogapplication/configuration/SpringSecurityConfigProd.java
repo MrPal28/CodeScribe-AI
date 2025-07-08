@@ -42,20 +42,13 @@ public class SpringSecurityConfigProd {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Permit all OPTIONS requests first
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Permit all requests to public API endpoints
                         .requestMatchers("/api/public/**").permitAll()
-                        // Require ADMIN role for admin APIs
+                        .requestMatchers("/api/user/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // Require USER or ADMIN role for user APIs
-                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                        // All other requests must be authenticated
                         .anyRequest().authenticated()
                 )
-                // Handle authentication exceptions
                 .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedEntryPoint()))
-                // Add JWT filter before Spring Security's default UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -65,7 +58,7 @@ public class SpringSecurityConfigProd {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // Allow your frontend origin
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173","https://n02cslhf-5173.inc1.devtunnels.ms/"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(Arrays.asList(
                 "Authorization",
@@ -86,9 +79,6 @@ public class SpringSecurityConfigProd {
         return source;
     }
 
-    // Additional CORS filter as fallback, though the .cors() configuration above is usually sufficient.
-    // This can be useful if you need to apply CORS very early in the filter chain,
-    // before Spring Security's own filter chain.
     @Bean
     public CorsFilter corsFilter() {
         return new CorsFilter(corsConfigurationSource());

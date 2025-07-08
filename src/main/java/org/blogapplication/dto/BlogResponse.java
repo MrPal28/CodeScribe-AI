@@ -16,5 +16,8 @@ public class BlogResponse {
     private String id;
     private String title;
     private String content;
+    private String authorName;
+    private String status;
+    private boolean isApproved;
     private LocalDateTime createdDate;
 }

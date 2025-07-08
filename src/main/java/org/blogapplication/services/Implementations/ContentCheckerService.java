@@ -24,7 +24,8 @@ public class ContentCheckerService {
 
 
     protected ContentCheckResponse sendPrompt(PromptRequest promptRequest) throws RuntimeException {
-        String API = appCache.cache.get(AppCache.key.AI_API.toString());
+       // String API = appCache.cache.get(AppCache.key.AI_API.toString()); // cloud api
+        String API = "http://127.0.0.1:8000/chat"; // local host
 
         // Set headers
         HttpHeaders headers = new HttpHeaders();
