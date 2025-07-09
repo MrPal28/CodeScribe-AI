@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface BlogService {
 
+    List<BlogResponse> getAllLoggedUseBlogs();
+
     BlogResponse createBlog(BlogRequest blogRequest);
 
     List<BlogResponse> getAllBlogs();
@@ -16,4 +18,6 @@ public interface BlogService {
     void deleteBlog(String id);
 
     BlogResponse getBlogById(String id);
+
+    BlogResponse update(String id, BlogRequest request);
 }

@@ -13,13 +13,14 @@ import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.BlogService;
 import org.blogapplication.services.UserService;
 import org.blogapplication.util.UserUtilityService;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +31,17 @@ public class BlogServiceImpl implements BlogService {
     private final UserRepository userRepository;
     private final UserService userService;
 
+    @Override
+    public List<BlogResponse> getAllLoggedUseBlogs() {
+        User user = userRepository.findByEmail(userUtilityService.getLoggedUserName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user.getBlogEntries().stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
     @Transactional
     @Override
-    public BlogResponse createBlog(BlogRequest blogRequest) {
+    public BlogResponse createBlog(BlogRequest blogRequest) throws RuntimeException{
         PromptRequest promptRequest = new PromptRequest(blogRequest.getContent());
         ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
         User loggedUser = userRepository.findByEmail(userUtilityService.getLoggedUserName()).orElseThrow(() -> new RuntimeException("User not found"));
@@ -70,14 +79,36 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogResponse getBlogById(String id) {
-        BlogEntries blog = blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found with id: " + id));
+        BlogEntries blog = blogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Blog not found with id: " + id));
         return convertToResponse(blog);
     }
+
+
+    @Override
+    public BlogResponse update(String id, BlogRequest request) {
+        BlogEntries presentBlog = blogRepository.findBlogById(id)
+                .orElseThrow(() -> new RuntimeException("Blog not found with id: " + id));
+
+        if (StringUtils.hasText(request.getTitle()) && !request.getTitle().equals(presentBlog.getTitle())) {
+            presentBlog.setTitle(request.getTitle());
+        }
+
+        if (StringUtils.hasText(request.getContent()) && !request.getContent().equals(presentBlog.getContent())) {
+            presentBlog.setContent(request.getContent());
+        }
+
+        BlogEntries updatedBlog = blogRepository.save(presentBlog);
+
+        return convertToResponse(updatedBlog);
+    }
+
 
     private BlogEntries convertToEntity(BlogRequest request) {
         return BlogEntries.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
+                .authorName(userUtilityService.getLoggedUserName())
                 .createdDate(LocalDateTime.now())
                 .build();
     }

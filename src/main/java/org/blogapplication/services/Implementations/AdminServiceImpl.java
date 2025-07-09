@@ -42,6 +42,9 @@ public class AdminServiceImpl implements AdminService {
                 .id(blogEntry.getId())
                 .title(blogEntry.getTitle())
                 .content(blogEntry.getContent())
+                .authorName(blogEntry.getAuthorName())
+                .isApproved(blogEntry.isAiApproved())
+                .status(blogEntry.getStatus().toString())
                 .createdDate(blogEntry.getCreatedDate())
                 .build();
     }
