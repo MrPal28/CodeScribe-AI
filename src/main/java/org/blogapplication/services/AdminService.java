@@ -5,6 +5,7 @@ import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.dto.BlogStatsResponse;
 import org.blogapplication.dto.PlatformStatsResponse;
 import org.blogapplication.dto.UserActivityResponse;
+import org.blogapplication.entity.BlogEntries;
 import org.blogapplication.entity.User;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public interface AdminService {
     void suspendUser(String userId);
 
     List<User> getAllUsers();
+    List<BlogEntries>getAllBlogs();
 
     // BLOG MODERATION
     void rejectBlog(String blogId, String reason);

@@ -32,9 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // String path = request.getServletPath();
+        // return path.startsWith("/api/public");
         String path = request.getServletPath();
-        return path.startsWith("/api/public");
+        boolean shouldSkip = path.startsWith("/api/public");
+        System.out.println("JWT filter skip? " + shouldSkip + " for path: " + path);
+        return shouldSkip;
     }
+
 
     @Override
     protected void doFilterInternal(
@@ -68,6 +73,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 String email = jwtUtil.extractUsername(jwt);
                 String roleString = jwtUtil.extractRoles(jwt);
+                System.out.println("Roles from JWT: " + roleString);
 
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
@@ -77,6 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 ? Collections.emptyList()
                                 : Arrays.stream(roleString.split(","))
                                 .map(String::trim)
+                                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
                                 .map(SimpleGrantedAuthority::new)
                                 .toList();
 
@@ -88,7 +95,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + e.getMessage() + "\"}");
                 return;
             }
         }

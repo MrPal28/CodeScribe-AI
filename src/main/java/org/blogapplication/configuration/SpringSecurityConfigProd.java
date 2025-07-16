@@ -9,6 +9,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,6 +31,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Profile("prod")
+@EnableMethodSecurity
 public class SpringSecurityConfigProd {
 
     private final JwtAuthenticationFilter jwtFilter;
@@ -42,15 +45,24 @@ public class SpringSecurityConfigProd {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Permit all OPTIONS requests first
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Permit all requests to public API endpoints
                         .requestMatchers("/api/public/**").permitAll()
+
                         .requestMatchers("/api/user/**").authenticated()
+                        // Require ADMIN role for admin APIs
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Require USER or ADMIN role for user APIs
+
+                        // All other requests must be authenticated
                         .anyRequest().authenticated()
                 )
+                // Handle authentication exceptions
                 .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedEntryPoint()))
+                // Add JWT filter before Spring Security's default UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
+            System.out.println("=== SPRING SECURITY PROD CONFIG LOADED ===");
         return http.build();
     }
 
@@ -79,6 +91,9 @@ public class SpringSecurityConfigProd {
         return source;
     }
 
+    // Additional CORS filter as fallback, though the .cors() configuration above is usually sufficient.
+    // This can be useful if you need to apply CORS very early in the filter chain,
+    // before Spring Security's own filter chain.
     @Bean
     public CorsFilter corsFilter() {
         return new CorsFilter(corsConfigurationSource());

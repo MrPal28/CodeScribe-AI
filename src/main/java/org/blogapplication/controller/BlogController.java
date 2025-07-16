@@ -6,11 +6,10 @@ import org.blogapplication.dto.BlogRequest;
 import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.services.BlogService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -20,39 +19,18 @@ public class BlogController {
 
     private final BlogService blogService;
 
-    @GetMapping("/get-all-user-blogs")
-    public ResponseEntity<List<BlogResponse>> getAllBlogs() {
-        try {
-            return ResponseEntity.ok(blogService.getAllLoggedUseBlogs());
-        } catch (Exception e) {
-            log.error("Error getting while fetching get all blogs: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 
-    @PostMapping("/add-new-blog")
-    public ResponseEntity<?> addNewBlog(@RequestBody BlogRequest requestContent) {
+    @PostMapping(value = "/add-new-blog", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BlogResponse> addNewBlog(@RequestPart("blog") BlogRequest requestContent,
+                                                   @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            BlogResponse response = blogService.createBlog(requestContent);
+            BlogResponse response = blogService.createBlog(requestContent, file);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
-            log.error("Runtime error on add new blog: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Error message", e.getMessage()));
-        } catch (Exception e) {
-            log.error("Server error on add new blog: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/get-blog-details/{id}")
-    public ResponseEntity<BlogResponse> getBlogDetails(@PathVariable String id) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(blogService.getBlogById(id));
-        } catch (RuntimeException e) {
-            log.error("Runtime error on get blog details: {}", e.getMessage());
+            log.error("Runtime error while adding new blog: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
-            log.error("Server error on get blog details: {}", e.getMessage());
+            log.error("Server error while adding new blog: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -67,19 +45,6 @@ public class BlogController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             log.error("Server error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PutMapping("/update-blog/{id}")
-    public ResponseEntity<BlogResponse> updateBlogById(@PathVariable String id, @RequestBody BlogRequest blogRequest) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(blogService.update(id, blogRequest));
-        } catch (RuntimeException e) {
-            log.error("Runtime error on update blog details: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (Exception e) {
-            log.error("Server error on update blog details: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

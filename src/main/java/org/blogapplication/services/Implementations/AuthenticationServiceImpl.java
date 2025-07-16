@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .userStatus(UserStatus.ACTIVE)
                 .profileImage(null)
                 .password(passwordEncoder.encode(request.getPassword()))
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
