@@ -2,7 +2,10 @@ package org.blogapplication.util;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,9 +33,30 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
+    // public String extractRoles(String token) {
+    //     return extractAllClaims(token).get("authorities", String.class);
+    // }
+
     public String extractRoles(String token) {
-        return extractAllClaims(token).get("authorities", String.class);
+        Object authorities = extractAllClaims(token).get("authorities");
+
+        if (authorities == null) {
+            return "";
+        }
+
+        if (authorities instanceof String) {
+            return (String) authorities;
+        }
+
+        if (authorities instanceof Collection) {
+            @SuppressWarnings("unchecked")
+            Collection<String> roles = (Collection<String>) authorities;
+            return String.join(",", roles);
+        }
+
+        return authorities.toString(); // fallback
     }
+
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
@@ -47,15 +71,34 @@ public class JwtUtil {
         return (username.equals(userDetails.getUsername()));
     }
 
+    // public String generateToken(UserDetails userDetails) {
+    //     // collect roles
+    //     Set<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+    //     return Jwts.builder()
+    //             .setSubject(userDetails.getUsername())
+    //             .claim("authorities",String.join(",",roles))
+    //             .setIssuedAt(new Date())
+    //             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60* 10)) // token valid for 10 hours
+    //             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+    //             .compact();
+    // }
+
     public String generateToken(UserDetails userDetails) {
-        // collect roles
-        Set<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
-        return Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .claim("authorities",String.join(",",roles))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60* 10)) // token valid for 10 hours
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+    // Flatten the roles cleanly
+    Set<String> flatRoles = userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .map(role -> role.replace("[", "").replace("]", "")) // Clean any nested junk
+            .flatMap(role -> Arrays.stream(role.split(","))) // in case of accidental lists
+            .map(String::trim)
+            .collect(Collectors.toSet());
+
+    return Jwts.builder()
+            .setSubject(userDetails.getUsername())
+            .claim("authorities", String.join(",", flatRoles)) // ✅ produces ROLE_ADMIN,ROLE_USER
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+            .compact();
+}
+
 }

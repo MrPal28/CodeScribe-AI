@@ -40,12 +40,14 @@ public class AdminController {
 
     /** Get every registered user */
     @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
     /** Promote a user to ADMIN */
     @PatchMapping("/users/{id}/promote")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> promoteToAdmin(@PathVariable String id) {
         adminService.promoteToAdmin(id);
         return ResponseEntity.noContent().build();
@@ -53,6 +55,7 @@ public class AdminController {
 
     /** Suspend (temporary) */
     @PatchMapping("/users/{id}/suspend")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> suspendUser(@PathVariable String id) {
         adminService.suspendUser(id);
         return ResponseEntity.noContent().build();
@@ -60,6 +63,7 @@ public class AdminController {
 
     /** Deactivate / block */
     @PatchMapping("/users/{id}/deactivate")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deactivateUser(@PathVariable String id) {
         adminService.deactivateUser(id);
         return ResponseEntity.noContent().build();
@@ -67,6 +71,7 @@ public class AdminController {
 
     /** Reactivate */
     @PatchMapping("/users/{id}/reactivate")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> reactivateUser(@PathVariable String id) {
         adminService.reactivateUser(id);
         return ResponseEntity.noContent().build();
@@ -74,6 +79,7 @@ public class AdminController {
 
     /** Soft delete */
     @PatchMapping("/users/{id}/soft-delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> softDeleteUser(@PathVariable String id) {
         adminService.softDeleteUser(id);
         return ResponseEntity.noContent().build();
@@ -81,6 +87,7 @@ public class AdminController {
 
     /** Hard delete (irreversible) */
     @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> hardDeleteUser(@PathVariable String id) {
         adminService.hardDeleteUser(id);
         return ResponseEntity.noContent().build();
@@ -88,6 +95,7 @@ public class AdminController {
 
     /** Update roles list */
     @PutMapping("/users/{id}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updateRoles(
             @PathVariable String id,
             @RequestBody List<String> roles) {
@@ -97,18 +105,21 @@ public class AdminController {
 
     /** Users filtered by status */
     @GetMapping("/users/status/{status}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getUsersByStatus(@PathVariable UserStatus status) {
         return ResponseEntity.ok(adminService.getUsersByStatus(status));
     }
 
     /** Users filtered by role */
     @GetMapping("/users/role/{role}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
         return ResponseEntity.ok(adminService.getUsersByRole(role));
     }
 
     /** Quick status check */
     @GetMapping("/users/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserStatsResponse> getUserStatus(@PathVariable String id) {
         return ResponseEntity.ok(
                 UserStatsResponse.builder()
@@ -123,12 +134,14 @@ public class AdminController {
 
     /** All blogs written by a given user */
     @GetMapping("/users/{id}/blogs")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BlogResponse>> getUserBlogs(@PathVariable String id) {
         return ResponseEntity.ok(adminService.getUserBlogs(id));
     }
 
     /** Reject a blog with reason */
     @PatchMapping("/blogs/{id}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> rejectBlog(
             @PathVariable String id,
             @RequestBody String reason) {
@@ -138,6 +151,7 @@ public class AdminController {
 
     /** Delete blog permanently */
     @DeleteMapping("/blogs/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteBlog(@PathVariable String id) {
         adminService.deleteBlog(id);
         return ResponseEntity.noContent().build();
@@ -149,18 +163,21 @@ public class AdminController {
 
     /** Blog‑specific stats (approved, rejected, today, etc.) */
     @GetMapping("/stats/blogs")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BlogStatsResponse> getBlogStats() {
         return ResponseEntity.ok(adminService.getBlogStats());
     }
 
     /** Platform‑wide stats (users + blogs) */
     @GetMapping("/stats/platform")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlatformStatsResponse> getPlatformStats() {
         return ResponseEntity.ok(adminService.getPlatformStats());
     }
 
     /** Top contributors by blog count */
     @GetMapping("/stats/top-contributors")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserActivityResponse>> getTopContributors() {
         return ResponseEntity.ok(adminService.getTopContributors());
     }

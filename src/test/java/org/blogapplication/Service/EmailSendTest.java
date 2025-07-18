@@ -14,6 +14,6 @@ public class EmailSendTest {
 
     @Test
     void testEmail() {
-        emailService.sendSuccessfulEmail("work.soumyadipadak@gmail.com", "Soumyadip Adak");
+        emailService.sendSuccessfulEmail("work.soumyadipadak@gmail.com", "Soumyadip Adak","templates\successfulEmailMessage.html");
     }
 }

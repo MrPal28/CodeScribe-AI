@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class OtpRequest {
-  @JsonProperty("phone_number")
-  private String phoneNumber;
+  @JsonProperty("email")
+  private String email;
 }

@@ -31,15 +31,15 @@ public class PublicController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<String> sendOtp(@RequestBody OtpRequest request) {
-        otpService.generateAndSendOtp(request.getPhoneNumber());
-        return ResponseEntity.ok("OTP sent to " + request.getPhoneNumber());
+        otpService.generateAndSendOtp(request.getEmail());
+        return ResponseEntity.ok("OTP sent to " + request.getEmail());
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> register(@RequestBody UserRequest request) {
         try {
-            boolean isOtpValid = otpService.verifyOtp(request.getPhoneNumber(), request.getOtp());
+            boolean isOtpValid = otpService.verifyOtp(request.getEmail(), request.getOtp());
 
             if (!isOtpValid) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid OTP");

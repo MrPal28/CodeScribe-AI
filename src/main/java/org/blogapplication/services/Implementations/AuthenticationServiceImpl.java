@@ -11,6 +11,7 @@ import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.AuthenticationService;
 import org.blogapplication.util.JwtUtil;
 import org.blogapplication.util.UserUtilityService;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,13 +36,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtUtil jwtUtil;
     private final UserUtilityService userUtilityService;
 
+    private String registrationMailPath = "/templates/successfulEmailMessage.html";
+
     @Override
     public UserResponse registerNewUser(UserRequest request) {
         User newUser = convertToEntity(request);
         newUser = userRepository.save(newUser);
 
         // send email
-        emailService.sendSuccessfulEmail(request.getEmail(), request.getFirstname() + " " + request.getLastname());
+        emailService.sendSuccessfulEmail(request.getEmail(), request.getFirstname() + " " + request.getLastname() , registrationMailPath);
 
         return convertToResponse(newUser);
     }
