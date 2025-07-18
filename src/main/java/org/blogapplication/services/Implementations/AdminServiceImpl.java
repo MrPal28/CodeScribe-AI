@@ -75,6 +75,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public List<BlogEntries> getAllBlogs() {
+        return blogRepository.findAll();
+    }
+
+    @Override
     public String getUserStats(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found With this ID"));

@@ -12,6 +12,7 @@ import org.blogapplication.dto.BlogStatsResponse;
 import org.blogapplication.dto.PlatformStatsResponse;
 import org.blogapplication.dto.UserActivityResponse;
 import org.blogapplication.dto.UserStatsResponse;
+import org.blogapplication.entity.BlogEntries;
 import org.blogapplication.entity.User;
 import org.blogapplication.services.AdminService;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,12 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(adminService.getAllUsers());
+    }
+
+    @GetMapping("/blogs")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<BlogEntries>> getAllBlogs() {
+        return ResponseEntity.ok(adminService.getAllBlogs());
     }
 
     /** Promote a user to ADMIN */
