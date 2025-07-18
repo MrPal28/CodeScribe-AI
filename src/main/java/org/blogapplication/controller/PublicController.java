@@ -8,10 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.blogapplication.dto.AuthenticationRequest;
 import org.blogapplication.dto.AuthenticationResponse;
 import org.blogapplication.dto.OtpRequest;
+import org.blogapplication.dto.ResetPasswordRequest;
 import org.blogapplication.dto.UserRequest;
 import org.blogapplication.dto.UserResponse;
 import org.blogapplication.services.AuthenticationService;
 import org.blogapplication.services.OtpService;
+import org.blogapplication.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/public")
 @RequiredArgsConstructor
 public class PublicController {
+
     private final AuthenticationService authenticationService;
     private final OtpService otpService;
+    private final UserService userService;
 
     @GetMapping("/")
     public String getString(){
@@ -72,4 +76,26 @@ public class PublicController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+    try {
+        boolean isOtpValid = otpService.verifyOtp(request.getEmail(), request.getOtp());
+
+        if (!isOtpValid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired OTP");
+        }
+
+        userService.resetPassword(request.getEmail(), request.getNewPassword());
+
+        otpService.clearOtp(request.getEmail());
+
+        return ResponseEntity.ok("Password reset successfully.");
+    } catch (Exception e) {
+        log.error("Error resetting password: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("Something went wrong. Please try again.");
+    }
+}
+
 }

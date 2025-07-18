@@ -23,7 +23,7 @@ public interface UserService {
 
     void sendPasswordResetEmail(String email);
 
-    void resetPassword(String token, String newPassword);
+    void resetPassword(String email, String newPassword);
 
     void followUser(String followerId, String targetUserId);
 

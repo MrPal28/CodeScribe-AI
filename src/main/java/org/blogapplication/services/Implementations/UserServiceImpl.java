@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    
 
     @Override
     public void updateUserData(UserUpdateRequest request) {
@@ -112,8 +113,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(String token, String newPassword) {
+    public void resetPassword(String email, String newPassword) {
+           User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
+    user.setPassword(passwordEncoder.encode(newPassword));
+    userRepository.save(user);
     }
 
     @Override
