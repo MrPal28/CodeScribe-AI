@@ -37,15 +37,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtUtil jwtUtil;
     private final UserUtilityService userUtilityService;
 
-    private String registrationMailPath = "/templates/successfulEmailMessage.html";
-
     @Override
     public UserResponse registerNewUser(UserRequest request) {
         User newUser = convertToEntity(request);
         newUser = userRepository.save(newUser);
 
         // send email
-        emailService.sendSuccessfulEmail(request.getEmail(), request.getFirstname() + " " + request.getLastname() , registrationMailPath);
+        emailService.sendSuccessfulEmail(request.getEmail(), request.getFirstname() + " " + request.getLastname(), "/templates/successfulEmailMessage.html");
 
         return convertToResponse(newUser);
     }
@@ -67,7 +65,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .role(List.of(Roles.ROLE_USER.toString()))
-                .phoneNumber(request.getPhoneNumber())
                 .userStatus(UserStatus.ACTIVE)
                 .profileImage(null)
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -81,8 +78,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .firstname((registeredUser.getFirstname()))
                 .lastName(registeredUser.getLastname())
                 .email(registeredUser.getEmail())
-                .phoneNumber(registeredUser.getPhoneNumber())
                 .role(registeredUser.getRole())
+                .blogs(registeredUser.getBlogEntries())
+                .profileImage(registeredUser.getProfileImage())
+                .created_at(registeredUser.getCreatedAt())
                 .build();
     }
 

@@ -34,7 +34,7 @@ public class DataInitializer {
                         .lastname("io.codeScribe")
                         .email(adminEmail)
                         .password(passwordEncoder.encode(adminPassword)) // change in production
-                        .phoneNumber(phone_number)
+                        //.phoneNumber(phone_number)
                         .userStatus(UserStatus.ACTIVE)
                         .role(List.of(Roles.ROLE_ADMIN.toString()))
                         .build();

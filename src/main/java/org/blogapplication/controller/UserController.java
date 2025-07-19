@@ -5,10 +5,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.blogapplication.dto.UserResponse;
+import org.blogapplication.dto.UserUpdateRequest;
 import org.blogapplication.services.AuthenticationService;
+import org.blogapplication.services.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @Slf4j
 @RestController
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     /**
      * this end point return logged user details this end point need optimize and this end point make for testing
@@ -29,6 +35,26 @@ public class UserController {
         } catch (Exception e) {
             log.error("Error getting user details: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping(value = "/upload-profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadProfileImage(@RequestPart("file") MultipartFile file) {
+        try {
+            userService.updateProfileImage(file);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PutMapping("/update/details")
+    public ResponseEntity<Void> updateUserDetails(@RequestBody UserUpdateRequest request) {
+        try {
+            userService.updateUserData(request);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

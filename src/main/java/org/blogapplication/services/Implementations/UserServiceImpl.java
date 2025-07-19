@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.blogapplication.dto.ChangePasswordRequest;
 import org.blogapplication.dto.UserResponse;
 import org.blogapplication.dto.UserUpdateRequest;
+import org.blogapplication.entity.BlogEntries;
 import org.blogapplication.entity.ImageEntity;
 import org.blogapplication.entity.User;
+import org.blogapplication.repository.BlogRepository;
 import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.ImageService;
 import org.blogapplication.services.UserService;
@@ -17,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -31,39 +31,33 @@ public class UserServiceImpl implements UserService {
     private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-    
+    private final BlogRepository blogRepository;
 
     @Override
     public void updateUserData(UserUpdateRequest request) {
-        // get the logged user details
-        User exitsUser = loggedUser();
+        User existingUser = loggedUser();
 
-        // update with comparing existing user details
-        User updateUser = User.builder()
-                .firstname(request.getFirstname() == null ? exitsUser.getFirstname() : request.getFirstname())
-                .lastname(request.getLastname() == null ? exitsUser.getLastname() : request.getLastname())
-                .email(request.getEmail() == null ? exitsUser.getEmail() : request.getEmail())
-                .phoneNumber(request.getPhoneNumber() == null ? exitsUser.getPhoneNumber() : request.getPhoneNumber())
-                .build();
+        existingUser.setFirstname(
+                request.getFirstname() != null ? request.getFirstname() : existingUser.getFirstname());
+        existingUser.setLastname(
+                request.getLastname() != null ? request.getLastname() : existingUser.getLastname());
+        existingUser.setEmail(
+                request.getEmail() != null ? request.getEmail() : existingUser.getEmail());
+//        existingUser.setPhoneNumber(
+//                request.getPhoneNumber() != null ? request.getPhoneNumber() : existingUser.getPhoneNumber());
 
-        // save in database
-        userRepository.save(updateUser);
+        userRepository.save(existingUser);
     }
 
     @Override
     public void updateProfileImage(MultipartFile image) {
-        // get the logged user
         User existUser = loggedUser();
 
         try {
             ImageEntity uploadImage;
-
             if (existUser.getProfileImage() != null && existUser.getProfileImage().get("id") != null) {
-                // replace with exiting image
-                String imageId = existUser.getProfileImage().get("id");
-                uploadImage = imageService.replaceImage(imageId, image);
+                uploadImage = imageService.replaceImage(existUser.getProfileImage().get("id"), image);
             } else {
-                // upload a new image
                 uploadImage = imageService.uploadImage(image);
             }
 
@@ -72,6 +66,15 @@ public class UserServiceImpl implements UserService {
             profileImageMap.put("url", uploadImage.getImageUrl());
 
             existUser.setProfileImage(profileImageMap);
+
+            // Update user's blog entries with new image
+            String email = userUtilityService.getLoggedUserName();
+            User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+            user.getBlogEntries().forEach(blog -> {
+                blog.setAuthorProfileImage(profileImageMap);
+                blogRepository.save(blog);
+            });
+
             userRepository.save(existUser);
         } catch (IOException e) {
             log.error("Error while updating profile image: ", e);
@@ -81,7 +84,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteAccount() {
-        // get the logged user details
         userRepository.delete(loggedUser());
     }
 
@@ -92,15 +94,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(ChangePasswordRequest request) {
-        User exitsUser = loggedUser();
-
-        // if old password is validated
+        User user = loggedUser();
         if (validatePassword(request.getOldPassword())) {
-            exitsUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
-            userRepository.save(exitsUser);
-
-            // after save new password send password reset email with logged user email
-            sendPasswordResetEmail(loggedUser().getEmail());
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+            sendPasswordResetEmail(user.getEmail());
         } else {
             throw new UsernameNotFoundException("Old Password Not Valid");
         }
@@ -108,28 +106,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendPasswordResetEmail(String email) {
-        String username = loggedUser().getFirstname() + " " + loggedUser().getLastname();
+        User user = loggedUser();
+        String username = user.getFirstname() + " " + user.getLastname();
         emailService.sendPasswordResetEmail(email, username);
     }
 
     @Override
     public void resetPassword(String email, String newPassword) {
-           User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-    user.setPassword(passwordEncoder.encode(newPassword));
-    userRepository.save(user);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     @Override
-    public void followUser(String followerId, String targetUserId) {
-
-    }
+    public void followUser(String followerId, String targetUserId) {}
 
     @Override
-    public void unfollowUser(String followerId, String targetUserId) {
-
-    }
+    public void unfollowUser(String followerId, String targetUserId) {}
 
     @Override
     public void saveUser(User user) {
@@ -147,6 +141,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private User loggedUser() {
-        return userRepository.findByEmail(userUtilityService.getLoggedUserName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userRepository.findByEmail(userUtilityService.getLoggedUserName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

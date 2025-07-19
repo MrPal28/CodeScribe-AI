@@ -35,9 +35,7 @@ public class User {
     @NonNull
     private String email;
 
-    @Indexed(unique = true)
-    @NonNull
-    private String phoneNumber;
+    // private String phoneNumber;
 
     @NonNull
     private String password;

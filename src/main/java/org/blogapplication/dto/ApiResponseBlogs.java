@@ -1,45 +1,35 @@
-package org.blogapplication.entity;
-
+package org.blogapplication.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.blogapplication.constants.BlogStatus;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Document(collection = "Blog_data")
-public class BlogEntries {
+public class ApiResponseBlogs {
 
-    @Id
     private String id;
-
-    @NonNull
     private String title;
-
-    @NonNull
     private String authorName;
-
-        // id  url
+    private String content;
     private Map<String, String> authorProfileImage;
 
-    @NonNull
-    private String content;
-
-    //       id,    url
     private Map<String, String> image;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonProperty("create_at")
     private LocalDateTime createdDate;
+
+    @JsonProperty("is_ai_approved")
     private boolean isAiApproved;
 
     private BlogStatus status;

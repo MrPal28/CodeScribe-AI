@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.blogapplication.entity.BlogEntries;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +21,8 @@ public class UserResponse {
     private String lastName;
     private String email;
     @JsonProperty("phone_number")
-    private String phoneNumber;
+    private Map<String, String> profileImage;
+    private List<BlogEntries> blogs;
     private List<String> role;
+    private LocalDateTime created_at;
 }

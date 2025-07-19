@@ -29,7 +29,7 @@ public class PublicController {
     private final UserService userService;
 
     @GetMapping("/")
-    public String getString(){
+    public String getString() {
         return "OK";
     }
 
@@ -79,23 +79,22 @@ public class PublicController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-    try {
-        boolean isOtpValid = otpService.verifyOtp(request.getEmail(), request.getOtp());
+        try {
+            boolean isOtpValid = otpService.verifyOtp(request.getEmail(), request.getOtp());
 
-        if (!isOtpValid) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired OTP");
+            if (!isOtpValid) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired OTP");
+            }
+
+            userService.resetPassword(request.getEmail(), request.getNewPassword());
+
+            otpService.clearOtp(request.getEmail());
+
+            return ResponseEntity.ok("Password reset successfully.");
+        } catch (Exception e) {
+            log.error("Error resetting password: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something went wrong. Please try again.");
         }
-
-        userService.resetPassword(request.getEmail(), request.getNewPassword());
-
-        otpService.clearOtp(request.getEmail());
-
-        return ResponseEntity.ok("Password reset successfully.");
-    } catch (Exception e) {
-        log.error("Error resetting password: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body("Something went wrong. Please try again.");
     }
-}
-
 }
