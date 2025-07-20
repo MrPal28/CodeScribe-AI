@@ -15,8 +15,6 @@ public class UserRequest {
     private String firstname;
     private String lastname;
     private String email;
-    @JsonProperty("phone_number")
-    private String phoneNumber;
     private String password;
     private String otp;
 }

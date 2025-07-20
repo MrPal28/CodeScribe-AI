@@ -17,7 +17,6 @@ public class ApiResponseUser {
     private String firstName;
     private String lastName;
     private String email;
-    private String phoneNumber;
     private Map<String, String> profileImage;
     private List<BlogEntries> blogEntries;
     private LocalDateTime createdAt;

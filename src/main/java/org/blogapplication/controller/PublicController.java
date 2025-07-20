@@ -50,7 +50,7 @@ public class PublicController {
             }
 
             UserResponse response = authenticationService.registerNewUser(request);
-            otpService.clearOtp(request.getPhoneNumber());
+//            otpService.clearOtp(request.getPhoneNumber());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {

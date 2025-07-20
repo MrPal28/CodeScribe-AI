@@ -54,7 +54,17 @@ public class UserController {
             userService.updateUserData(request);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @DeleteMapping("/delete-account")
+    public ResponseEntity<Void> deleteUserAccount() {
+        try {
+            userService.deleteAccount();
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

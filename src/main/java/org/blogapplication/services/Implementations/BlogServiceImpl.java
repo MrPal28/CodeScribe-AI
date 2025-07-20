@@ -11,6 +11,7 @@ import org.blogapplication.entity.User;
 import org.blogapplication.model.ContentCheckResponse;
 import org.blogapplication.model.PromptRequest;
 import org.blogapplication.repository.BlogRepository;
+import org.blogapplication.repository.ImageRepository;
 import org.blogapplication.repository.UserRepository;
 import org.blogapplication.services.BlogService;
 import org.blogapplication.services.ImageService;
@@ -33,16 +34,17 @@ public class BlogServiceImpl implements BlogService {
     private final UserUtilityService userUtilityService;
     private final UserRepository userRepository;
     private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Transactional
     @Override
     public BlogResponse createBlog(BlogRequest blogRequest, MultipartFile file) {
-        PromptRequest promptRequest = new PromptRequest(blogRequest.getContent());
-        ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
+//        PromptRequest promptRequest = new PromptRequest(blogRequest.getContent());
+//        ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
 
-        if (response.isInappropriate()) {
-            throw new RuntimeException(response.getModeration_result());
-        }
+//        if (response.isInappropriate()) {
+//            throw new RuntimeException(response.getModeration_result());
+//        }
 
         User loggedUser = userRepository.findByEmail(userUtilityService.getLoggedUserName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -78,9 +80,15 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Void deleteBlog(String blogId) {
+    public Void deleteBlog(String blogId) throws IOException {
         BlogEntries blogEntry = blogRepository.findById(blogId)
                 .orElseThrow(() -> new RuntimeException("Blog not found with id: " + blogId));
+
+        if (!blogEntry.getImage().isEmpty()) {
+            Map<String, String> blogImage = blogEntry.getImage();
+            imageService.deleteImage(blogImage.get("id"));
+        }
+
         blogRepository.delete(blogEntry);
         return null;
     }

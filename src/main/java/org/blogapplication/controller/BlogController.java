@@ -49,6 +49,7 @@ public class BlogController {
     @DeleteMapping("/delete-blog/{blogId}")
     public ResponseEntity<Void> deleteBlog(@PathVariable String blogId) {
         try {
+            log.error(blogId);
             blogService.deleteBlog(blogId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (RuntimeException e) {

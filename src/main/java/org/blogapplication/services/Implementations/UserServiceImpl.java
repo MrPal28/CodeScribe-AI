@@ -84,6 +84,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteAccount() {
+        String email = userUtilityService.getLoggedUserName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        List<BlogEntries> blogEntries = user.getBlogEntries();
+
+        if (blogEntries != null) {
+            blogRepository.deleteAll(blogEntries);
+        }
+
         userRepository.delete(loggedUser());
     }
 
@@ -120,10 +128,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void followUser(String followerId, String targetUserId) {}
+    public void followUser(String followerId, String targetUserId) {
+    }
 
     @Override
-    public void unfollowUser(String followerId, String targetUserId) {}
+    public void unfollowUser(String followerId, String targetUserId) {
+    }
 
     @Override
     public void saveUser(User user) {

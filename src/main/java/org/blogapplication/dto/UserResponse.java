@@ -20,7 +20,6 @@ public class UserResponse {
     private String firstname;
     private String lastName;
     private String email;
-    @JsonProperty("phone_number")
     private Map<String, String> profileImage;
     private List<BlogEntries> blogs;
     private List<String> role;
