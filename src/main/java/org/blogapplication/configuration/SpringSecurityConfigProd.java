@@ -62,7 +62,7 @@ public class SpringSecurityConfigProd {
                 .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedEntryPoint()))
                 // Add JWT filter before Spring Security's default UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-            System.out.println("=== SPRING SECURITY PROD CONFIG LOADED ===");
+        System.out.println("=== SPRING SECURITY PROD CONFIG LOADED ===");
         return http.build();
     }
 
@@ -70,7 +70,7 @@ public class SpringSecurityConfigProd {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // Allow your frontend origin
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173","https://n02cslhf-5173.inc1.devtunnels.ms/"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://n02cslhf-5173.inc1.devtunnels.ms/", "https://codescribeai.pages.dev/"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(Arrays.asList(
                 "Authorization",

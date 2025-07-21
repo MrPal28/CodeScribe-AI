@@ -26,6 +26,7 @@ public class ContentCheckerService {
     protected ContentCheckResponse sendPrompt(PromptRequest promptRequest) throws RuntimeException {
         String API = appCache.cache.get(AppCache.key.AI_API.toString());
 
+
         // Set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);

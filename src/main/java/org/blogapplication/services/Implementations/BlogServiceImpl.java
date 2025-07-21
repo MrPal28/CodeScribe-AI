@@ -3,6 +3,7 @@ package org.blogapplication.services.Implementations;
 import lombok.RequiredArgsConstructor;
 import org.blogapplication.constants.BlogStatus;
 import org.blogapplication.dto.ApiResponseBlogs;
+import org.blogapplication.dto.BlogEditRequest;
 import org.blogapplication.dto.BlogRequest;
 import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.entity.BlogEntries;
@@ -39,12 +40,12 @@ public class BlogServiceImpl implements BlogService {
     @Transactional
     @Override
     public BlogResponse createBlog(BlogRequest blogRequest, MultipartFile file) {
-//        PromptRequest promptRequest = new PromptRequest(blogRequest.getContent());
-//        ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
+        PromptRequest promptRequest = new PromptRequest(blogRequest.getContent());
+        ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
 
-//        if (response.isInappropriate()) {
-//            throw new RuntimeException(response.getModeration_result());
-//        }
+        if (response.isInappropriate()) {
+            throw new RuntimeException(response.getModeration_result());
+        }
 
         User loggedUser = userRepository.findByEmail(userUtilityService.getLoggedUserName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -70,6 +71,24 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public BlogResponse updateBlog(String id, BlogEditRequest blogEditRequest) {
+        PromptRequest promptRequest = new PromptRequest(blogEditRequest.getContent());
+        ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
+
+        if (response.isInappropriate()) {
+            throw new RuntimeException(response.getModeration_result());
+        }
+
+        BlogEntries blog = blogRepository.findBlogById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
+        blog.setContent(blogEditRequest.getContent());
+        blog.setTitle(blogEditRequest.getTitle());
+
+        blogRepository.save(blog);
+
+        return convertToResponse(blog);
+    }
+
+    @Override
     public List<ApiResponseBlogs> getAllBlogs() {
         String username = userUtilityService.getLoggedUserName();
         User user = userRepository.findByEmail(username)
@@ -80,7 +99,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Void deleteBlog(String blogId) throws IOException {
+    public void deleteBlog(String blogId) throws IOException {
         BlogEntries blogEntry = blogRepository.findById(blogId)
                 .orElseThrow(() -> new RuntimeException("Blog not found with id: " + blogId));
 
@@ -90,7 +109,6 @@ public class BlogServiceImpl implements BlogService {
         }
 
         blogRepository.delete(blogEntry);
-        return null;
     }
 
     private BlogEntries convertToEntity(BlogRequest request, User user, Map<String, String> imageData) {

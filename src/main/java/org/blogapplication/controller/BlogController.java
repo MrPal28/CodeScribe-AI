@@ -3,6 +3,7 @@ package org.blogapplication.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.blogapplication.dto.ApiResponseBlogs;
+import org.blogapplication.dto.BlogEditRequest;
 import org.blogapplication.dto.BlogRequest;
 import org.blogapplication.dto.BlogResponse;
 import org.blogapplication.services.BlogService;
@@ -43,6 +44,16 @@ public class BlogController {
         } catch (Exception e) {
             log.error("Server error while adding new blog: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // TODO: change the functionality in feature add the change image function will be added
+    @PutMapping("/edit/blog/{id}")
+    public ResponseEntity<BlogResponse> editBlogById(@PathVariable String id, @RequestBody BlogEditRequest blogEditRequest) {
+        try {
+            return ResponseEntity.ok(blogService.updateBlog(id, blogEditRequest));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

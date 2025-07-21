@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
         if (blogEntries != null) {
             blogRepository.deleteAll(blogEntries);
         }
-
+        emailService.sendDeleteAccountEmail(email);
         userRepository.delete(loggedUser());
     }
 
