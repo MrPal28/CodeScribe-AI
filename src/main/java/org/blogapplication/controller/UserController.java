@@ -1,6 +1,6 @@
 package org.blogapplication.controller;
 
-import jakarta.servlet.http.Cookie;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +10,12 @@ import org.blogapplication.services.AuthenticationService;
 import org.blogapplication.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.Duration;
 
 
 @Slf4j
@@ -70,11 +73,15 @@ public class UserController {
 
     @PostMapping("/log-out")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie jwtCookie = new Cookie("jwt", null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0);
-        response.addCookie(jwtCookie);
+        String clearCookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofSeconds(0))
+                .sameSite("None")
+                .build().toString();
+
+        response.setHeader("Set-Cookie", clearCookie);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
