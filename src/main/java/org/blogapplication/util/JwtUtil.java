@@ -33,9 +33,6 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
-    // public String extractRoles(String token) {
-    //     return extractAllClaims(token).get("authorities", String.class);
-    // }
 
     public String extractRoles(String token) {
         Object authorities = extractAllClaims(token).get("authorities");
@@ -71,18 +68,6 @@ public class JwtUtil {
         return (username.equals(userDetails.getUsername()));
     }
 
-    // public String generateToken(UserDetails userDetails) {
-    //     // collect roles
-    //     Set<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
-    //     return Jwts.builder()
-    //             .setSubject(userDetails.getUsername())
-    //             .claim("authorities",String.join(",",roles))
-    //             .setIssuedAt(new Date())
-    //             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60* 10)) // token valid for 10 hours
-    //             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-    //             .compact();
-    // }
-
     public String generateToken(UserDetails userDetails) {
     // Flatten the roles cleanly
     Set<String> flatRoles = userDetails.getAuthorities().stream()
@@ -94,7 +79,7 @@ public class JwtUtil {
 
     return Jwts.builder()
             .setSubject(userDetails.getUsername())
-            .claim("authorities", String.join(",", flatRoles)) // ✅ produces ROLE_ADMIN,ROLE_USER
+            .claim("authorities", String.join(",", flatRoles))
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)

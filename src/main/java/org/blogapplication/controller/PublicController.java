@@ -1,6 +1,5 @@
 package org.blogapplication.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +14,11 @@ import org.blogapplication.services.AuthenticationService;
 import org.blogapplication.services.OtpService;
 import org.blogapplication.services.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @Slf4j
 @RestController
@@ -64,11 +66,21 @@ public class PublicController {
         try {
             AuthenticationResponse authResponse = authenticationService.login(request);
 
-            Cookie jwtCookie = new Cookie("jwt", authResponse.getToken());
-            jwtCookie.setHttpOnly(true);
-            jwtCookie.setPath("/");
-            jwtCookie.setMaxAge(24 * 60 * 60);
-            response.addCookie(jwtCookie);
+//            Cookie jwtCookie = new Cookie("jwt", authResponse.getToken());
+//            jwtCookie.setHttpOnly(true);
+//            jwtCookie.setPath("/");
+//            jwtCookie.setMaxAge(24 * 60 * 60);
+//            jwtCookie.setSameSite("None");
+//            response.addCookie(jwtCookie);
+
+            String cookie = ResponseCookie.from("jwt", authResponse.getToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(Duration.ofDays(1))
+                    .sameSite("None")
+                    .build().toString();
+            response.setHeader("Set-Cookie", cookie);
             log.info("Log in successful");
             return ResponseEntity.ok(authResponse);
         } catch (Exception e) {
