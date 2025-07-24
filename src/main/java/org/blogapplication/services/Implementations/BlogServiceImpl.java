@@ -116,6 +116,7 @@ public class BlogServiceImpl implements BlogService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .authorName(user.getFirstname() + " " + user.getLastname())
+                .authorProfileImage(user.getProfileImage())
                 .image(imageData)
                 .isAiApproved(true)
                 .status(BlogStatus.APPROVED)

@@ -44,6 +44,9 @@ public class SpringSecurityConfigProd {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**"
+                        ).permitAll()
                         // Permit all OPTIONS requests first
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Permit all requests to public API endpoints

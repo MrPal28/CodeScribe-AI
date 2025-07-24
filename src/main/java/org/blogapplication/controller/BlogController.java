@@ -32,7 +32,7 @@ public class BlogController {
         }
     }
 
-    @PostMapping(value = "/add-new-blog", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BlogResponse> addNewBlog(@RequestPart("blog") BlogRequest requestContent,
                                                    @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
