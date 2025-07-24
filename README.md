@@ -1,6 +1,8 @@
-## 📘 CodeScribe AI
+# 📘 CodeScribe AI
 
 A modern **React-based blog application** built using **Vite**, **Tailwind CSS**, and other powerful libraries like **Framer Motion**, **AOS**, **React Router v7**, and more.
+
+🔗 **Live Site:** [https://codescribeai.pages.dev/](https://codescribeai.pages.dev/)
 
 ---
 
@@ -29,16 +31,6 @@ Here are the major libraries used and how to install them:
 | `@vitejs/plugin-react` | React plugin for Vite          | `npm install @vitejs/plugin-react`                                                            |
 
 ---
-
-<!-- ### 📦 Installation
-
-```bash
-git clone https://github.com/yourusername/blog-app.git
-cd blog-app
-npm install
-```
-
---- -->
 
 ### 🧪 Available Scripts
 
@@ -74,39 +66,25 @@ Locally preview the production build.
 npm run lint
 ```
 
-<!-- Checks the code for linting errors. -->
-
-<!-- ---
-
-### 📁 Project Structure
-
-```
-blog-app/
-│
-├── public/              # Static files
-├── src/
-│   ├── assets/          # Images and media
-│   ├── components/      # Reusable UI components
-│   ├── pages/           # Page-level components
-│   ├── routes/          # React Router configuration
-│   ├── App.jsx          # Main App component
-│   └── main.jsx         # Vite entry file
-├── .eslintrc.cjs        # ESLint config
-├── tailwind.config.js   # Tailwind config
-├── vite.config.js       # Vite config
-└── package.json
-``` -->
+Checks the code for linting errors.
 
 ---
 
 ### 🧠 Features
 
-* Modern UI with Tailwind CSS
-* Routing with `react-router-dom v7`
-* Animations using `AOS` and `Framer Motion`
-* JWT-based login/logout
-* Toast notifications
-* Smooth scroll navigation
-* Responsive design
+* ⚡ Modern UI with Tailwind CSS
+* 🧭 Routing with `react-router-dom v7`
+* ✨ Animations using `AOS` and `Framer Motion`
+* 🔐 JWT-based login/logout
+* 🔔 Toast notifications
+* 🎯 Smooth scroll navigation
+* 📱 Fully responsive design
 
 ---
+
+### 📌 Live Website
+
+🌐 [Visit CodeScribe AI →](https://codescribeai.pages.dev/)
+
+---
+
