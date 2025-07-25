@@ -1,141 +1,94 @@
- # CodeScribe AI - “Built for Devs. Powered by AI.”
+# CodeScribe AI - Intelligent Blogging Platform
 
+CodeScribe AI is a sophisticated full-stack blogging platform that integrates advanced AI capabilities for content
+moderation and enhancement. Built with a modern tech stack, it offers a secure, scalable, and user-friendly experience
+for bloggers, administrators, and readers.
 
-# 📘 Blog Application with AI Integration
+🌐 **Live Website**: [https://codescribeai.pages.dev](https://codescribeai.pages.dev)
 
-This is a full-featured **Spring Boot** blogEntries application enhanced with **AI capabilities**. It uses **Maven** as the
-build automation tool and follows modular, maintainable architecture principles.
+## 🌟 Key Features
 
----
+### Core Functionality
 
-## 🌳 Repository Branches Overview
+- **AI-Powered Content Moderation**: Machine learning models automatically detect and filter inappropriate content
+- **Secure Authentication**: JWT-based authentication with email verification
+- **Rich Text Editor**: Intuitive blogging interface with media embedding support
+- **User Profiles**: Personalized dashboards with engagement metrics
+- **Admin Dashboard**: Comprehensive moderation and management tools (in progress)
+- **RESTful API**: Well-documented endpoints for external integration
 
-This repository is organized into **three separate branches**, each serving a specific purpose:
+### Upcoming Features
 
----
+- 🔔 Real-time notifications system
+- 📊 Advanced analytics dashboard
+- 🤖 AI-assisted content generation
 
-### 🔹 `main`
+## 🛠️ Technology Stack
 
-> 📦 Contains all the **Spring Boot backend code** for the Blog Application.
-> 🔗 [Access the `main` branch](https://github.com/MrPal28/Blog-Application-With-AI-Integration)
+| Layer          | Technologies                                     |
+|----------------|--------------------------------------------------|
+| **Backend**    | Java 17, Spring Boot 3.x, Spring Security, Maven |
+| **Frontend**   | React 18, Tailwind CSS, Axios, React Router      |
+| **AI Service** | Python 3.10, FastAPI, Transformers               |
+| **Database**   | MongoDB Atlas                                    |
+| **DevOps**     | Docker, GitHub Actions                           |
 
----
+## 🚀 Quick Start
 
-### 🔹 `ai_api`
+### Prerequisites
 
-> 🤖 Dedicated to the **AI-powered API** that handles intelligent blogEntries post suggestions and processing.
-> 🔗 [Access the `ai_api` branch](https://github.com/MrPal28/Blog-Application-With-AI-Integration/tree/ai_api)
+- Java 17 JDK
+- Node.js 18+
+- Python 3.10
+- MongoDB instance (local or Atlas)
 
----
-
-### 🔹 `Front-end-react`
-
-> 🎨 Contains the complete **React-based front-end** code for the blogEntries application interface.
-> 🔗 [Access the
-`Front-end-react` branch](https://github.com/MrPal28/Blog-Application-With-AI-Integration/tree/Front-end-react)
-
----
-
-## 🔧 Technologies Used
-
-- Java 17+
-- Spring Boot
-- Maven
-- Lombok
-- REST APIs
-- MongoDB/MySQL (In the future, we will decide which database technology to use)
-- React
-- Twilio
-
----
-
-## 🚀 Getting Started
-
-### 🧰 Prerequisites
-
-- Java 17 or higher
-- Maven 3.5.0
-- IDE (IntelliJ IDEA Unlimited, IntelliJ IDEA Community Edition, VSCode)
-- Git
-
----
-
-## ⚙️ Build & Run the Application
+### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/MrPal28/Blog-Application-With-AI-Integration.git
+git clone https://github.com/MrPal28/CodeScribe-AI.git
+cd CodeScribe-A
 ```
+
+# Backend setup
 
 ```bash
-# Navigate to the project folder
-cd Blog-Application-With-AI-Integration
+cd backend && mvn clean install
 ```
+
+# Frontend setup
 
 ```bash
-# Build the project using Maven
-mvn clean install
+cd ../frontend && npm install
 ```
+
+# AI Service setup
 
 ```bash
-# Run the Spring Boot application
-mvn spring-boot:run
+cd ../ai-service && pip install -r requirements.txt
 ```
 
----
+### Running the Application
 
-## 🔗 Base API URL
+1. **Backend**: `mvn spring-boot:run` (http://localhost:8082)
+2. **Frontend**: `npm start` (http://localhost:3000)
+3. **AI Service**: `uvicorn app.main:app --reload` (http://localhost:8000)
 
-```
-http://localhost:8082/app/
-```
+## 📚 API Documentation
 
-> Use this as the root endpoint for all your API calls.
+Access interactive API docs when backend is running:
 
----
+- Swagger UI: [http://localhost:8080/app/swagger-ui.html](http://localhost:8082/swagger-ui.html)
+- OpenAPI Spec: [http://localhost:8080/app/v3/api-docs](http://localhost:8082/v3/api-docs)
 
-## 🛠️ Project Status Overview
+## 🌐 Website Features
 
-| Module             | Status                     |
-|--------------------|----------------------------|
-| Database           | Completed                  | 
-| AI Content checker | Completed but need upgrade | 
-| Admin Service      | pending                    |
-| User Service       | pending                    | 
-| Blog Service       | In Progress                | 
-| Auth Service       | Completed                  | 
-| Otp Service        | Completed                  | 
-| Security           | Completed                  | 
-| User Interface     | Pending                    | 
+- **Account Creation**: Secure sign-up with email verification
+- **Post Creation**: Rich text editor with AI content analysis
+- **Post Discovery**: View all posts with filtering options
+- **User Dashboard**: Manage your content and profile
 
----
+Visit our live platform: [https://codescribeai.pages.dev](https://codescribeai.pages.dev)
 
-## 🧩 Module Progress
+## 📧 Contact
 
-- [x] Database connection
-- [x] AI Content checker
-- [ ] Admin service
-- [ ] User service
-- [X] Blog service
-- [X] Auth service
-- [X] Otp service
-- [x] Security
-- [ ] User interface
-
----
-
-## 📄 Project Notes
-
-- This `README.md` file **will be updated regularly** as the project evolves.
-- If **new features or modules** are added, ensure to **document them here** for clarity and team collaboration.
-- All project group members must **follow this Git repository** and **strictly refer to this README file** for
-  consistent development practices.
-
----
-
-## ✅ Team Commitment
-
-> 📌 **All members of the project group must follow the guidelines and structure mentioned in this repository. Keeping
-the documentation up-to-date is a shared responsibility.**
-
----
+**Project Team** - io.codescribeai@gmail.com  
