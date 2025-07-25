@@ -40,7 +40,7 @@ public class BlogServiceImpl implements BlogService {
     @Transactional
     @Override
     public BlogResponse createBlog(BlogRequest blogRequest, MultipartFile file) {
-        PromptRequest promptRequest = new PromptRequest(blogRequest.getContent());
+        PromptRequest promptRequest = new PromptRequest(blogRequest.getTitle() + " " + blogRequest.getContent());
         ContentCheckResponse response = contentCheckerService.sendPrompt(promptRequest);
 
         if (response.isInappropriate()) {
