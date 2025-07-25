@@ -9,41 +9,42 @@ import { GoHome } from "react-icons/go";
 export const features = [
     {
         title: "Lightning Fast Creation",
-        description: "Generate high-quality blog posts in minutes, not hours. Our AI understands your style and tone.",
+        description: "Create polished blog posts in minutes. Our AI adapts to your unique tone and style for fast, seamless results.",
         icon: "⚡",
         gradient: "from-purple-500 to-pink-500"
     },
     {
         title: "Intelligent Content",
-        description: "Advanced AI algorithms ensure your content is engaging, SEO-optimized, and tailored to your audience.",
+        description: "Our AI reviews content for SEO, tone, and readability—detecting errors, slang, and unsafe language to ensure quality.",
         icon: "🧠",
         gradient: "from-blue-500 to-indigo-600"
     },
     {
         title: "Privacy First",
-        description: "Your data is secure. We don't store your personal information or share your content with third parties.",
+        description: "We prioritize your privacy—no personal data is saved or shared. Your content remains secure and fully confidential.",
         icon: "🔒",
         gradient: "from-emerald-500 to-teal-600"
     },
     {
         title: "Developer Friendly",
-        description: "Built by developers, for developers. Seamless integration with your existing workflow and tools.",
+        description: "Seamless integration into your development tools and stack makes our platform easy to use and fully customizable.",
         icon: "💻",
         gradient: "from-amber-500 to-orange-500"
     },
     {
         title: "Community Driven",
-        description: "Join thousands of creators who trust CodeScribe AI for their content creation needs.",
+        description: "Join thousands of creators who rely on CodeScribe AI to produce consistent, engaging content at a professional level.",
         icon: "👥",
         gradient: "from-rose-500 to-pink-600"
     },
     {
         title: "Professional Quality",
-        description: "Every blog post meets professional standards with proper formatting, structure, and readability.",
+        description: "Every output meets high professional standards with correct formatting, structure and clean language usage.",
         icon: "🏆",
         gradient: "from-violet-500 to-purple-600"
     }
 ];
+
 
 
 export const stats = [

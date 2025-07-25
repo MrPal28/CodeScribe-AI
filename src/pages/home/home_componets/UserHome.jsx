@@ -147,10 +147,10 @@ function UserHome() {
                                 e.target.src = 'https://via.placeholder.com/800x400';
                             }}
                         />
-                        <div
+                        {/* <div
                             className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                             <span className="text-white text-sm font-medium">View full image</span>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             );

@@ -7,8 +7,11 @@ import {
     RiAddLine,
     RiCloseFill,
     RiUploadLine,
-    RiLogoutBoxLine
+    RiLogoutBoxLine,
+    RiLockLine,
+    RiDeleteBinLine,
 } from "react-icons/ri";
+import { FaArrowRight, FaEnvelope } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import toast from "react-hot-toast";
@@ -19,6 +22,10 @@ function Navbar({ activeItem, setActiveItem, email }) {
     const [showSearchModal, setShowSearchModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+    const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [blogData, setBlogData] = useState({
         title: "",
@@ -26,17 +33,23 @@ function Navbar({ activeItem, setActiveItem, email }) {
         image: null,
         previewImage: null
     });
+    const [resetPasswordData, setResetPasswordData] = useState({
+        email: '',
+        newPassword: '',
+        otp: ''
+    });
+    const [otpSent, setOtpSent] = useState(false);
+    const [countdown, setCountdown] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [isResettingPassword, setIsResettingPassword] = useState(false);
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
     const dropdownRef = useRef(null);
+    const profileButtonRef = useRef(null);
 
     const navigate = useNavigate();
     const location = useLocation();
-    const { user, allUsers, fetchAllUsers, logout, uploadBlog, fetchUserDetails } = useAuth();
-
-    useEffect(() => {
-        fetchAllUsers();
-    }, [user, location, fetchAllUsers]);
+    const { user, allUsers, fetchAllUsers, logout, uploadBlog, fetchUserDetails, sentOTP, fetchResetPassword, fetchToDeleteAccount } = useAuth();
 
     useEffect(() => {
         const handleResize = () => {
@@ -50,7 +63,8 @@ function Navbar({ activeItem, setActiveItem, email }) {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+                (!profileButtonRef.current || !profileButtonRef.current.contains(event.target))) {
                 setShowProfileDropdown(false);
             }
         };
@@ -59,12 +73,27 @@ function Navbar({ activeItem, setActiveItem, email }) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        let timer;
+        if (countdown > 0) {
+            timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        }
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [countdown]);
+
     const handleNavigation = (item) => {
         setActiveItem(item.label);
         setShowProfileDropdown(false);
-        if (item.label === "Search") setShowSearchModal(true);
-        else if (item.label === "Create") setShowCreateModal(true);
-        else if (item.path) navigate(item.path);
+        if (item.label === "Search") {
+            fetchAllUsers();
+            setShowSearchModal(true);
+        } else if (item.label === "Create") {
+            setShowCreateModal(true);
+        } else if (item.path) {
+            navigate(item.path);
+        }
     };
 
     const handleLogout = async () => {
@@ -72,6 +101,7 @@ function Navbar({ activeItem, setActiveItem, email }) {
         try {
             await logout();
             navigate('/login');
+            // toast.success('Logged out successfully');
         } catch (err) {
             console.error('Error while logging out:', err);
             toast.error("Something went wrong during logout");
@@ -90,14 +120,23 @@ function Navbar({ activeItem, setActiveItem, email }) {
         setShowProfileDropdown(false);
     };
 
+    const handleSettingsClick = () => {
+        setShowSettingsModal(true);
+        setShowProfileDropdown(false);
+    };
+
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
     };
 
-    const filteredUsers = allUsers?.filter(user =>
-        `${user.firstname || ''} ${user.lastName || ''}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
+    const filteredUsers = allUsers
+        ?.filter(user =>
+            user.email?.toLowerCase() !== "io.codescribeai@gmail.com" && (
+                `${user.firstname || ''} ${user.lastName || ''}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.email?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        )
+        .slice(0, 4) || [];
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -128,7 +167,7 @@ function Navbar({ activeItem, setActiveItem, email }) {
 
         try {
             await uploadBlog(
-                {title: blogData.title, content: blogData.content},
+                { title: blogData.title, content: blogData.content },
                 blogData.image
             );
 
@@ -139,19 +178,112 @@ function Navbar({ activeItem, setActiveItem, email }) {
                 image: null,
                 previewImage: null
             });
-
+            //toast.success('Blog post created successfully');
             await fetchUserDetails();
         } catch (error) {
-            toast.error("Failed upload blog")
+            toast.error("Failed to upload blog");
             console.error("Error creating blog:", error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handleResetPasswordChange = (e) => {
+        const { name, value } = e.target;
+        setResetPasswordData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const validateResetPasswordField = (name, value) => {
+        switch (name) {
+            case 'email':
+                return /^\S+@\S+\.\S+$/.test(value);
+            case 'newPassword':
+                return value.length >= 6;
+            case 'otp':
+                return /^\d{6}$/.test(value);
+            default:
+                return true;
+        }
+    };
+
+    const handleSendOtp = async () => {
+        if (!validateResetPasswordField('email', resetPasswordData.email)) {
+            toast.error('Please enter a valid email address');
+            return;
+        }
+
+        setIsResettingPassword(true);
+        try {
+            await sentOTP(resetPasswordData.email);
+            setOtpSent(true);
+            setCountdown(30);
+            // toast.success('OTP sent to your email');
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message || 'Failed to send OTP');
+        } finally {
+            setIsResettingPassword(false);
+        }
+    };
+
+    const handleResetPasswordSubmit = async (e) => {
+        e.preventDefault();
+
+        const requiredFields = ['email', 'newPassword', 'otp'];
+        const isValid = requiredFields.every(field => {
+            const valid = validateResetPasswordField(field, resetPasswordData[field]);
+            if (!valid) {
+                toast.error(`Please enter a valid ${field.replace('_', ' ')}`);
+            }
+            return valid;
+        });
+
+        if (!isValid) return;
+
+        setIsResettingPassword(true);
+        try {
+            await fetchResetPassword({
+                email: resetPasswordData.email,
+                newPassword: resetPasswordData.newPassword,
+                otp: resetPasswordData.otp
+            });
+            // toast.success('Password reset successfully! Please login with your new password.');
+            setShowResetPasswordModal(false);
+            setResetPasswordData({ email: '', newPassword: '', otp: '' });
+            setOtpSent(false);
+            await logout();
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message || 'Password reset failed');
+        } finally {
+            setIsResettingPassword(false);
+        }
+    };
+
+    const handleDeleteAccount = () => {
+        setShowDeleteAccountModal(false);
+        setShowDeleteConfirmModal(true);
+    };
+
+    const handleConfirmDeleteAccount = async () => {
+        setIsDeletingAccount(true);
+        try {
+            await fetchToDeleteAccount();
+            // toast.success('Account deleted successfully');
+            navigate('/login');
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message || 'Failed to delete account');
+        } finally {
+            setIsDeletingAccount(false);
+            setShowDeleteConfirmModal(false);
+        }
+    };
+
     const closeModal = () => {
         setShowSearchModal(false);
         setShowCreateModal(false);
+        setShowSettingsModal(false);
+        setShowResetPasswordModal(false);
+        setShowDeleteAccountModal(false);
+        setShowDeleteConfirmModal(false);
         setSearchQuery("");
         setBlogData({
             title: "",
@@ -159,6 +291,8 @@ function Navbar({ activeItem, setActiveItem, email }) {
             image: null,
             previewImage: null
         });
+        setResetPasswordData({ email: '', newPassword: '', otp: '' });
+        setOtpSent(false);
         navigate(location);
     };
 
@@ -221,8 +355,8 @@ function Navbar({ activeItem, setActiveItem, email }) {
                                 <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                                 <input
                                     type="text"
-                                    placeholder="Search by name or email"
-                                    className="w-full pl-10 pr-3 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 transition-all text-sm"
+                                    placeholder="Search people . . . ."
+                                    className="w-full pl-10 pr-3 py-2.5 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 transition-all text-sm"
                                     value={searchQuery}
                                     onChange={handleSearch}
                                     autoFocus
@@ -259,7 +393,6 @@ function Navbar({ activeItem, setActiveItem, email }) {
                                                     <p className="font-medium text-white truncate text-sm">
                                                         {user.firstName} {user.lastName}
                                                     </p>
-                                                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -301,7 +434,7 @@ function Navbar({ activeItem, setActiveItem, email }) {
                                 <input
                                     type="text"
                                     id="title"
-                                    className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 transition-all text-sm"
+                                    className="w-full px-3 py-2.5 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 transition-all text-sm"
                                     value={blogData.title}
                                     onChange={(e) => setBlogData(prev => ({
                                         ...prev,
@@ -319,7 +452,7 @@ function Navbar({ activeItem, setActiveItem, email }) {
                                 <textarea
                                     id="content"
                                     rows={5}
-                                    className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 transition-all text-sm"
+                                    className="w-full px-3 py-2.5 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 transition-all text-sm"
                                     value={blogData.content}
                                     onChange={(e) => setBlogData(prev => ({
                                         ...prev,
@@ -391,6 +524,223 @@ function Navbar({ activeItem, setActiveItem, email }) {
                 </div>
             )}
 
+            {/* Settings Modal */}
+            {showSettingsModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                    <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-600/50 transform transition-all duration-300">
+                        <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+                            <h3 className="text-base font-semibold text-white">Settings</h3>
+                            <button
+                                onClick={closeModal}
+                                className="text-gray-300 hover:text-white transition-colors focus:outline-none"
+                                aria-label="Close settings modal"
+                            >
+                                <RiCloseFill className="text-xl" />
+                            </button>
+                        </div>
+                        <div className="p-4 space-y-3">
+                            <button
+                                onClick={() => {
+                                    setShowResetPasswordModal(true);
+                                    setShowSettingsModal(false);
+                                }}
+                                className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            >
+                                <RiLockLine className="mr-3 text-lg" />
+                                Reset Password
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowDeleteAccountModal(true);
+                                    setShowSettingsModal(false);
+                                }}
+                                className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500"
+                            >
+                                <RiDeleteBinLine className="mr-3 text-lg" />
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reset Password Modal */}
+            {showResetPasswordModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                    <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-600/50 transform transition-all duration-300">
+                        <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+                            <h3 className="text-base font-semibold text-white">Reset Password</h3>
+                            <button
+                                onClick={closeModal}
+                                className="text-gray-300 hover:text-white transition-colors focus:outline-none"
+                                aria-label="Close reset password modal"
+                            >
+                                <RiCloseFill className="text-xl" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleResetPasswordSubmit} className="p-6 space-y-5">
+                            <div>
+                                <label className="block text-gray-300 mb-1.5 ml-1 text-sm font-medium">Email</label>
+                                <div className="relative">
+                                    <FaEnvelope
+                                        className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
+                                    />
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder="Enter Email"
+                                        value={resetPasswordData.email}
+                                        onChange={handleResetPasswordChange}
+                                        className="w-full pl-10 pr-4 py-2.5 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                                        required
+                                        disabled={isResettingPassword || otpSent}
+                                    />
+                                </div>
+                                {!otpSent && (
+                                    <button
+                                        type="button"
+                                        onClick={handleSendOtp}
+                                        disabled={isResettingPassword || countdown > 0 || !validateResetPasswordField('email', resetPasswordData.email)}
+                                        className="w-full mt-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm transition-all duration-300 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
+                                    >
+                                        {countdown > 0 ? `Resend (${countdown}s)` : 'Send OTP'}
+                                    </button>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-300 mb-1.5 ml-1 text-sm font-medium">New Password</label>
+                                <div className="relative">
+                                    <RiLockLine
+                                        className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
+                                    />
+                                    <input
+                                        type="password"
+                                        name="newPassword"
+                                        placeholder="Enter New Password (min 6 characters)"
+                                        value={resetPasswordData.newPassword}
+                                        onChange={handleResetPasswordChange}
+                                        className="w-full pl-10 pr-4 py-2.5 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                                        required
+                                        minLength={6}
+                                        disabled={isResettingPassword}
+                                    />
+                                </div>
+                            </div>
+
+                            {otpSent && (
+                                <div>
+                                    <label className="block text-gray-300 mb-1.5 ml-1 text-sm font-medium">OTP</label>
+                                    <input
+                                        type="text"
+                                        name="otp"
+                                        placeholder="Enter 6-digit OTP"
+                                        value={resetPasswordData.otp}
+                                        onChange={handleResetPasswordChange}
+                                        className="w-full px-4 py-2.5 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                                        required
+                                        maxLength={6}
+                                        pattern="\d{6}"
+                                        disabled={isResettingPassword}
+                                    />
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={isResettingPassword || !otpSent}
+                                className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all duration-300 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {isResettingPassword ? 'Processing...' : 'Reset Password'}
+                                {!isResettingPassword && <FaArrowRight className="text-sm" />}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Account Modal */}
+            {showDeleteAccountModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                    <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-600/50 transform transition-all duration-300">
+                        <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+                            <h3 className="text-base font-semibold text-white">Delete Account</h3>
+                            <button
+                                onClick={closeModal}
+                                className="text-gray-300 hover:text-white transition-colors focus:outline-none"
+                                aria-label="Close delete account modal"
+                            >
+                                <RiCloseFill className="text-xl" />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <p className="text-gray-300 mb-6 text-sm">
+                                Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.
+                            </p>
+                            <div className="flex flex-col sm:flex-row justify-end gap-3">
+                                <button
+                                    onClick={closeModal}
+                                    className="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDeleteAccount}
+                                    className="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Account Confirmation Modal */}
+            {showDeleteConfirmModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                    <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-600/50 transform transition-all duration-300">
+                        <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+                            <h3 className="text-base font-semibold text-white">Confirm Delete Account</h3>
+                            <button
+                                onClick={closeModal}
+                                className="text-gray-300 hover:text-white transition-colors focus:outline-none"
+                                aria-label="Close confirm delete modal"
+                            >
+                                <RiCloseFill className="text-xl" />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <p className="text-gray-300 mb-6 text-sm">
+                                Please confirm that you want to permanently delete your account. This action is irreversible.
+                            </p>
+                            <div className="flex flex-col sm:flex-row justify-end gap-3">
+                                <button
+                                    onClick={closeModal}
+                                    className="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirmDeleteAccount}
+                                    disabled={isDeletingAccount}
+                                    className="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                    {isDeletingAccount ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        'Confirm Delete'
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Desktop Sidebar */}
             {!isMobile && (
                 <aside
@@ -426,6 +776,7 @@ function Navbar({ activeItem, setActiveItem, email }) {
 
                     <div className="p-4 border-t border-gray-800 flex-shrink-0 relative" ref={dropdownRef}>
                         <div
+                            ref={profileButtonRef}
                             className="flex items-center cursor-pointer hover:bg-gray-800 rounded-lg p-2 transition-colors"
                             onClick={handleProfileClick}
                             role="button"
@@ -443,29 +794,38 @@ function Navbar({ activeItem, setActiveItem, email }) {
                             </div>
                         </div>
                         {showProfileDropdown && (
-                            <div className="absolute bottom-16 left-4 right-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-10 overflow-hidden">
+                            <div className="absolute bottom-16 left-4 right-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-10 overflow-hidden transform transition-all duration-200 ease-out">
                                 <button
                                     onClick={handleProfileNavigation}
-                                    className="w-full px-4 py-2.5 text-left text-gray-200 hover:bg-gray-700 hover:text-white transition-colors focus:outline-none focus:bg-gray-700 text-sm"
+                                    className="w-full px-4 py-3 text-left text-gray-200 hover:bg-gray-700 hover:text-white transition-colors flex items-center focus:outline-none focus:bg-gray-700 text-sm"
                                     aria-label="View profile"
                                 >
-                                    Profile
+                                    <RiUserLine className="mr-3 text-lg" />
+                                    <span>Profile</span>
+                                </button>
+                                <button
+                                    onClick={handleSettingsClick}
+                                    className="w-full px-4 py-3 text-left text-gray-200 hover:bg-gray-700 hover:text-white transition-colors flex items-center focus:outline-none focus:bg-gray-700 text-sm"
+                                    aria-label="Settings"
+                                >
+                                    <RiLockLine className="mr-3 text-lg" />
+                                    <span>Settings</span>
                                 </button>
                                 <button
                                     onClick={handleLogout}
                                     disabled={isLoggingOut}
-                                    className="w-full px-4 py-2.5 text-left text-gray-200 hover:bg-red-600 hover:text-white transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-red-600 text-sm"
+                                    className="w-full px-4 py-3 text-left text-gray-200 hover:bg-red-600 hover:text-white transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-red-600 text-sm"
                                     aria-label="Log out"
                                 >
                                     {isLoggingOut ? (
                                         <>
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2"></div>
-                                            Logging out...
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-3"></div>
+                                            <span>Logging out...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <RiLogoutBoxLine className="mr-2 text-lg" />
-                                            Log out
+                                            <RiLogoutBoxLine className="mr-3 text-lg" />
+                                            <span>Log out</span>
                                         </>
                                     )}
                                 </button>
@@ -485,8 +845,8 @@ function Navbar({ activeItem, setActiveItem, email }) {
                                 key={item.label}
                                 onClick={() => handleNavigation(item)}
                                 className={`flex items-center justify-center w-16 h-16 transition-colors duration-200 focus:outline-none ${activeItem === item.label
-                                        ? 'text-purple-400'
-                                        : 'text-gray-400 hover:text-purple-400'
+                                    ? 'text-purple-400'
+                                    : 'text-gray-400 hover:text-purple-400'
                                     }`}
                                 aria-label={item.label}
                             >
@@ -495,10 +855,11 @@ function Navbar({ activeItem, setActiveItem, email }) {
                         ))}
                     <div className="relative" ref={dropdownRef}>
                         <button
+                            ref={profileButtonRef}
                             onClick={handleProfileClick}
                             className={`flex items-center justify-center w-16 h-16 transition-colors duration-200 focus:outline-none ${activeItem === 'Profile'
-                                    ? 'text-purple-400'
-                                    : 'text-gray-400 hover:text-purple-400'
+                                ? 'text-purple-400'
+                                : 'text-gray-400 hover:text-purple-400'
                                 }`}
                             aria-label="Profile"
                             aria-haspopup="true"
@@ -507,27 +868,38 @@ function Navbar({ activeItem, setActiveItem, email }) {
                             {handleShowProfileImage()}
                         </button>
                         {showProfileDropdown && (
-                            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-10 overflow-hidden">
+                            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-10 overflow-hidden transition-all duration-200 ease-out">
                                 <button
                                     onClick={handleProfileNavigation}
-                                    className="w-full px-4 py-2.5 text-left text-gray-200 hover:bg-gray-700 hover:text-purple-400 transition-colors focus:outline-none text-sm"
+                                    className="w-full px-4 py-3 text-left text-gray-200 hover:bg-gray-700 hover:text-white transition-colors flex items-center focus:outline-none text-sm"
+                                    aria-label="View profile"
                                 >
-                                    Profile
+                                    <RiUserLine className="mr-3 text-lg" />
+                                    <span>Profile</span>
+                                </button>
+                                <button
+                                    onClick={handleSettingsClick}
+                                    className="w-full px-4 py-3 text-left text-gray-200 hover:bg-gray-700 hover:text-white transition-colors flex items-center focus:outline-none text-sm"
+                                    aria-label="Settings"
+                                >
+                                    <RiLockLine className="mr-3 text-lg" />
+                                    <span>Settings</span>
                                 </button>
                                 <button
                                     onClick={handleLogout}
                                     disabled={isLoggingOut}
-                                    className="w-full px-4 py-2.5 text-left text-gray-200 hover:bg-red-600 hover:text-white transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none text-sm"
+                                    className="w-full px-4 py-3 text-left text-gray-200 hover:bg-red-600 hover:text-white transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none text-sm"
+                                    aria-label="Log out"
                                 >
                                     {isLoggingOut ? (
                                         <>
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2"></div>
-                                            Logging out...
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-3"></div>
+                                            <span>Logging out...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <RiLogoutBoxLine className="mr-2 text-lg" />
-                                            Log out
+                                            <RiLogoutBoxLine className="mr-3 text-lg" />
+                                            <span>Log out</span>
                                         </>
                                     )}
                                 </button>
@@ -560,37 +932,11 @@ function Navbar({ activeItem, setActiveItem, email }) {
                     overflow: hidden;
                 }
 
-                .modal-enter {
-                    opacity: 0;
-                    transform: scale(0.95);
-                }
-                .modal-enter-active {
-                    opacity: 1;
-                    transform: scale(1);
-                    transition: opacity 300ms, transform 300ms;
-                }
-                .modal-exit {
-                    opacity: 1;
-                    transform: scale(1);
-                }
-                .modal-exit-active {
-                    opacity: 0;
-                    transform: scale(0.95);
-                    transition: opacity 300ms, transform 300ms;
-                }
-
                 @media (max-width: 767px) {
-                    .modal-enter {
-                        transform: translateY(20px);
-                    }
-                    .modal-enter-active {
-                        transform: translateY(0);
-                    }
-                    .modal-exit {
-                        transform: translateY(0);
-                    }
-                    .modal-exit-active {
-                        transform: translateY(20px);
+                    .profile-dropdown {
+                        bottom: 4.5rem;
+                        left: 50%;
+                        transform: translateX(-50%);
                     }
                 }
 

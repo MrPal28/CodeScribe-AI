@@ -2,7 +2,7 @@ import axios from "axios";
 import { BASE_API } from "./baseapi";
 
 const API = axios.create({
-    baseURL: `${BASE_API}/app/blog/`,
+    baseURL: `${BASE_API}/app/blog`,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ export const addNewBlog = (blogData, file) => {
         formData.append('file', file);
     }
 
-    return API.post('/add-new-blog', formData, {
+    return API.post('/add', formData, {
         headers: {
             'Accept': 'application/json'
         }

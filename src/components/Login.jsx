@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowRight, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -20,6 +20,12 @@ function Login() {
         setFormData(prev => ({ ...prev, [name]: value }));
         if (error) setError(null);
     };
+
+    useEffect(() => {
+        setTimeout(() => {
+            setError(null)
+        }, 4000)
+    }, [error])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
